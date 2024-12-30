@@ -7,7 +7,7 @@ Key points:
 - The `commandapi-bukkit-plugin` dependency is used:
 
   ```kotlin
-  implementation("dev.jorel:commandapi-bukkit-plugin:9.7.0")
+  implementation("dev.jorel:commandapi-bukkit-plugin:9.7.1-SNAPSHOT")
   ```
 
 - In the plugin.yml, CommandAPI is listed as a depend:

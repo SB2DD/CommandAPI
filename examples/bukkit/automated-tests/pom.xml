@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-			<version>9.7.0</version>
+			<version>9.7.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-core</artifactId>
-			<version>9.7.0</version>
+			<version>9.7.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

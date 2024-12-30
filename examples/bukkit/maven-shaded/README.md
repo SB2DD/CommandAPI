@@ -10,7 +10,7 @@ Key points:
   <dependency>
       <groupId>dev.jorel</groupId>
       <artifactId>commandapi-bukkit-shade</artifactId>
-      <version>9.7.0</version>
+      <version>9.7.1-SNAPSHOT</version>
   </dependency>
   ```
 
