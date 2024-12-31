@@ -24,7 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -220,6 +225,9 @@ public class NMS_1_21_R3 extends NMS_Common {
 	private static final boolean vanillaCommandDispatcherFieldExists;
 	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
 
+	private static MethodHandle minecraftServerSetSelected = null;
+	private static boolean setSelectedWithBoolean = false;
+
 	// Derived from net.minecraft.commands.Commands;
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
 
@@ -239,6 +247,14 @@ public class NMS_1_21_R3 extends NMS_Common {
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "h", "dispatcher");
+
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		try {
+			minecraftServerSetSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
+			setSelectedWithBoolean = true;
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			// So, uhh... I guess we're on Paper 1.21.4 build 62 or earlier
+		}
 
 		boolean fieldExists;
 		try {
@@ -1011,7 +1027,17 @@ public class NMS_1_21_R3 extends NMS_Common {
 			this.<MinecraftServer>getMinecraftServer().resources.close();
 			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
 			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			if (!setSelectedWithBoolean) {
+				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			} else {
+				try {
+					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, false);
+				} catch (Throwable e) {
+					for (StackTraceElement stackTraceElement : e.getStackTrace()) {
+						CommandAPI.logError(stackTraceElement.toString());
+					}
+				}
+			}
 			
 			final FeatureFlagSet enabledFeatures = this.<MinecraftServer>getMinecraftServer().getWorldData().getDataConfiguration().enabledFeatures();
 
