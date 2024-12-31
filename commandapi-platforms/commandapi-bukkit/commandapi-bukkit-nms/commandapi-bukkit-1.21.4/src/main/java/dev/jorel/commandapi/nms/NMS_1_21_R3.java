@@ -1029,7 +1029,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
 			} else {
 				try {
-					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, false);
+					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);
 				} catch (Throwable e) {
 					for (StackTraceElement stackTraceElement : e.getStackTrace()) {
 						CommandAPI.logError(stackTraceElement.toString());
