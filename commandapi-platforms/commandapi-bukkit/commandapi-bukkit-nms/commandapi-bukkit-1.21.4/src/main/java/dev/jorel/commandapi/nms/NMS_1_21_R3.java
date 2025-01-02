@@ -223,8 +223,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 	private static final boolean vanillaCommandDispatcherFieldExists;
 	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
 
-	private static MethodHandle minecraftServerSetSelected = null;
-	private static boolean setSelectedWithBoolean = false;
+	private static final MethodHandle minecraftServerSetSelected;
 
 	// Derived from net.minecraft.commands.Commands;
 	private static final CommandBuildContext COMMAND_BUILD_CONTEXT;
@@ -247,12 +246,14 @@ public class NMS_1_21_R3 extends NMS_Common {
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "h", "dispatcher");
 
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		MethodHandle setSelected;
 		try {
-			minecraftServerSetSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
-			setSelectedWithBoolean = true;
+			setSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
 		} catch (NoSuchMethodException | IllegalAccessException e) {
-			// So, uhh... I guess we're on Paper 1.21.4 build 62 or earlier
+			// We're on Spigot or Paper 1.21.4 build 62 or earlier
+			setSelected = null;
 		}
+		minecraftServerSetSelected = setSelected;
 
 		boolean fieldExists;
 		try {
@@ -998,6 +999,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 				}
 			}
 			return packResources;
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to collect resource packs!", exception);
+			// Return all currently selected packs
+			return this.<MinecraftServer>getMinecraftServer().getPackRepository().openAllSelected();
 		});
 
 		// Step 2: Convert all of the resource packs into ReloadableResources which
@@ -1018,6 +1023,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 					LogUtils.getLogger().isDebugEnabled()).done();
 
 			return simpleReloadInstance.thenApply(x -> serverResources);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to convert resource packs into ReloadableResources", exception);
+			// Return existing resources
+			return this.<MinecraftServer>getMinecraftServer().resources;
 		});
 
 		// Step 3: Actually load all of the resources
@@ -1025,15 +1034,13 @@ public class NMS_1_21_R3 extends NMS_Common {
 			this.<MinecraftServer>getMinecraftServer().resources.close();
 			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
 			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			if (!setSelectedWithBoolean) {
+			if (minecraftServerSetSelected == null) {
 				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
 			} else {
 				try {
 					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);
 				} catch (Throwable e) {
-					for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-						CommandAPI.logError(stackTraceElement.toString());
-					}
+					CommandAPI.logException("Something went wrong while trying to invoke PackRepository#setSelected(Collection, boolean)", e);
 				}
 			}
 			
@@ -1069,6 +1076,9 @@ public class NMS_1_21_R3 extends NMS_Common {
 						enabledFeatures
 				)
 			);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to load resources.", exception);
+			return null;
 		});
 
 		// Step 4: Block the thread until everything's done
