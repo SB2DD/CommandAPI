@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -217,6 +220,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 	private static final Field entitySelectorUsesSelector;
 	// private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
+	private static final MethodHandle minecraftServerSetSelected;
 	private static final boolean vanillaCommandDispatcherFieldExists;
 	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
 
@@ -239,6 +243,16 @@ public class NMS_1_21_R3 extends NMS_Common {
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "h", "dispatcher");
+
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		MethodHandle setSelected;
+		try {
+			setSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			// We're on Spigot or Paper 1.21.4 build 62 or earlier
+			setSelected = null;
+		}
+		minecraftServerSetSelected = setSelected;
 
 		boolean fieldExists;
 		try {
@@ -984,6 +998,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 				}
 			}
 			return packResources;
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to collect resource packs!", exception);
+			// Return all currently selected packs
+			return this.<MinecraftServer>getMinecraftServer().getPackRepository().openAllSelected();
 		});
 
 		// Step 2: Convert all of the resource packs into ReloadableResources which
@@ -1004,6 +1022,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 					LogUtils.getLogger().isDebugEnabled()).done();
 
 			return simpleReloadInstance.thenApply(x -> serverResources);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to convert resource packs into ReloadableResources", exception);
+			// Return existing resources
+			return this.<MinecraftServer>getMinecraftServer().resources;
 		});
 
 		// Step 3: Actually load all of the resources
@@ -1011,7 +1033,15 @@ public class NMS_1_21_R3 extends NMS_Common {
 			this.<MinecraftServer>getMinecraftServer().resources.close();
 			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
 			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			if (minecraftServerSetSelected == null) {
+				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			} else {
+				try {
+					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);
+				} catch (Throwable e) {
+					CommandAPI.logException("Something went wrong while trying to invoke PackRepository#setSelected(Collection, boolean)", e);
+				}
+			}
 			
 			final FeatureFlagSet enabledFeatures = this.<MinecraftServer>getMinecraftServer().getWorldData().getDataConfiguration().enabledFeatures();
 
@@ -1045,6 +1075,9 @@ public class NMS_1_21_R3 extends NMS_Common {
 						enabledFeatures
 				)
 			);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to load resources.", exception);
+			return null;
 		});
 
 		// Step 4: Block the thread until everything's done
