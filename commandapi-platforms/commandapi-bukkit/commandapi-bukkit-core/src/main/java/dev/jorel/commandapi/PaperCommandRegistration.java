@@ -91,9 +91,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		LiteralCommandNode<Source> commandNode = asPluginCommand(node.build());
 		LiteralCommandNode<Source> namespacedCommandNode = asPluginCommand(CommandAPIHandler.getInstance().namespaceNode(commandNode, namespace));
 
-		System.out.println(commandNode.getClass().getCanonicalName());
-		System.out.println(namespacedCommandNode.getClass().getCanonicalName());
-
 		// Add to registered command nodes
 		registeredNodes.addChild(commandNode);
 		registeredNodes.addChild(namespacedCommandNode);
@@ -143,13 +140,6 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			return node;
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	private void printCommandNode(CommandNode<Source> commandNode, int spaces) {
-		for (CommandNode<Source> child : commandNode.getChildren()) {
-			System.out.println("".repeat(spaces) + child.getName());
-			printCommandNode(child, spaces + 4);
 		}
 	}
 
