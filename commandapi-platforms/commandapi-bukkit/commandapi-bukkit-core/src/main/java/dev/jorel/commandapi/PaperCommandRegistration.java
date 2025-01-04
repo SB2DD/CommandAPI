@@ -6,11 +6,13 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import org.bukkit.help.HelpTopic;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -60,6 +62,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	// Provide access to internal functions that may be useful to developers
+
 	/**
 	 * Checks if a Brigadier command node came from wrapping a Bukkit command
 	 *
@@ -135,12 +138,36 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				commandNode.getLiteral(),
 				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
 				commandNode,
-				""
+				getDescription(commandNode.getLiteral())
 			);
 			return node;
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private String getDescription(String commandName) {
+		String description = "";
+		for (RegisteredCommand command : CommandAPI.getRegisteredCommands()) {
+			String namespaceStripped = "";
+			if (commandName.contains(":")) {
+				namespaceStripped = commandName.split(":")[1];
+			} else {
+				namespaceStripped = commandName;
+			}
+			if (command.commandName().equals(namespaceStripped)) {
+				Object helpTopic = command.helpTopic().orElse(null);
+				if (helpTopic != null) {
+					description = ((HelpTopic) helpTopic).getShortText();
+				} else {
+					description = command.fullDescription()
+						.orElse(command.shortDescription()
+							.orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPlugin().getName() + " plugin."));
+				}
+				break;
+			}
+		}
+		return description;
 	}
 
 }
