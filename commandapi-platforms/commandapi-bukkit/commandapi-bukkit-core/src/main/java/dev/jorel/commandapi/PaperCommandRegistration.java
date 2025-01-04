@@ -5,7 +5,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -22,9 +26,37 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	// Store registered commands nodes for eventual reloads
 	private final RootCommandNode<Source> registeredNodes = new RootCommandNode<>();
 
+	private static final Constructor<?> pluginCommandNodeConstructor;
+	private static final CommandDispatcher<?> staticDispatcher;
+
+	private final CommandDispatcher<Source> dispatcher;
+
+	static {
+		CommandDispatcher<?> commandDispatcher;
+		// If we're using this class, we're operating on a Paper server with Paper's Brigadier API
+		// The class io.papermc.paper.command.brigadier.PluginCommandNode exists
+		Constructor<?> commandNode;
+		try {
+			commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
+
+			Class<?> paperCommands = Class.forName("io.papermc.paper.command.brigadier.PaperCommands");
+			Object paperCommandsInstance = paperCommands.getField("INSTANCE").get(null);
+			Field dispatcherField = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getDeclaredField("dispatcher");
+			dispatcherField.setAccessible(true);
+			commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
+		} catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException e) {
+			// This doesn't happen
+			commandNode = null;
+			commandDispatcher = null;
+		}
+		staticDispatcher = commandDispatcher;
+		pluginCommandNodeConstructor = commandNode;
+	}
+
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
 		this.isBukkitCommand = isBukkitCommand;
+		this.dispatcher = (CommandDispatcher<Source>) staticDispatcher;
 	}
 
 	// Provide access to internal functions that may be useful to developers
@@ -56,15 +88,19 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public LiteralCommandNode<Source> registerCommandNode(LiteralArgumentBuilder<Source> node, String namespace) {
-		LiteralCommandNode<Source> commandNode = getBrigadierDispatcher.get().register(node);
-		LiteralCommandNode<Source> namespacedCommandNode = CommandAPIHandler.getInstance().namespaceNode(commandNode, namespace);
+		LiteralCommandNode<Source> commandNode = asPluginCommand(node.build());
+		LiteralCommandNode<Source> namespacedCommandNode = asPluginCommand(CommandAPIHandler.getInstance().namespaceNode(commandNode, namespace));
+
+		System.out.println(commandNode.getClass().getCanonicalName());
+		System.out.println(namespacedCommandNode.getClass().getCanonicalName());
 
 		// Add to registered command nodes
 		registeredNodes.addChild(commandNode);
 		registeredNodes.addChild(namespacedCommandNode);
 
-		// Namespace is not empty on Bukkit forks
-		getBrigadierDispatcher.get().getRoot().addChild(namespacedCommandNode);
+		// Register commands
+		dispatcher.getRoot().addChild(commandNode);
+		dispatcher.getRoot().addChild(namespacedCommandNode);
 
 		return commandNode;
 	}
@@ -94,4 +130,27 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			root.addChild(commandNode);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
+		try {
+			LiteralCommandNode<Source> node = (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
+				commandNode.getLiteral(),
+				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+				commandNode,
+				""
+			);
+			return node;
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void printCommandNode(CommandNode<Source> commandNode, int spaces) {
+		for (CommandNode<Source> child : commandNode.getChildren()) {
+			System.out.println("".repeat(spaces) + child.getName());
+			printCommandNode(child, spaces + 4);
+		}
+	}
+
 }
