@@ -134,13 +134,12 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	@SuppressWarnings("unchecked")
 	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
 		try {
-			LiteralCommandNode<Source> node = (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
+			return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
 				commandNode.getLiteral(),
 				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
 				commandNode,
 				getDescription(commandNode.getLiteral())
 			);
-			return node;
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
