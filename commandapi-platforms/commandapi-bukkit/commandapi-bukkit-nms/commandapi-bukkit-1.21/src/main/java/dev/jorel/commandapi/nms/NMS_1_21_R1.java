@@ -255,7 +255,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 	public final ArgumentType<?> _ArgumentBlockState() {
 		return BlockStateArgument.block(COMMAND_BUILD_CONTEXT);
 	}
-	
+
 	@Override
 	public ArgumentType<?> _ArgumentChatComponent() {
 		return ComponentArgument.textComponent(COMMAND_BUILD_CONTEXT);
@@ -306,7 +306,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 	public String[] compatibleVersions() {
 		return new String[] { "1.21", "1.21.1" };
 	};
-	
+
 	@Differs(from = "1.20.6", by = "ItemInput constructor uses a data components patch, instead of a data components map")
 	private static String serializeNMSItemStack(ItemStack is) {
 		return new ItemInput(is.getItemHolder(), is.getComponentsPatch()).serialize(COMMAND_BUILD_CONTEXT);
@@ -322,7 +322,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 	public final String convert(ParticleData<?> particle) {
 		final ParticleOptions particleOptions = CraftParticle.createParticleParam(particle.particle(), particle.data());
 		final ResourceLocation particleKey = BuiltInRegistries.PARTICLE_TYPE.getKey(particleOptions.getType());
-		
+
 		// /particle dust{scale:2,color:[1,2,2]}
 		// Use the particle option's codec to convert the data into NBT. If we have any tags, add them
 		// to the end, otherwise leave it as it is (e.g. `/particle crit` as opposed to `/particle crit{}`)
@@ -332,7 +332,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 		final String dataString = particleOptionsTag.getAllKeys().isEmpty() ? "" : particleOptionsTag.getAsString();
 		return particleKey.toString() + dataString;
 	}
-	
+
 	/**
 	 * An implementation of {@link ServerFunctionManager#execute(CommandFunction, CommandSourceStack)} with a specified
 	 * command result callback instead of {@link CommandResultCallback.EMPTY}
@@ -369,7 +369,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 	// Converts NMS function to SimpleFunctionWrapper
 	private final SimpleFunctionWrapper convertFunction(CommandFunction<CommandSourceStack> commandFunction) {
 		ToIntFunction<CommandSourceStack> appliedObj = (CommandSourceStack css) -> runCommandFunction(commandFunction, css);
-		
+
 		// Unpack the commands by instantiating the function with no CSS, then retrieving its entries
 		String[] commands = new String[0];
 		try {
@@ -405,7 +405,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 			throws CommandSyntaxException {
 		return ResourceLocationArgument.getAdvancement(cmdCtx, key).toBukkit();
 	}
-	
+
 	@Override
 	public Component getAdventureChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return GsonComponentSerializer.gson().deserialize(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
@@ -863,6 +863,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 		};
 		case BIOMES -> _ArgumentSyntheticBiome()::listSuggestions;
 		case ENTITIES -> net.minecraft.commands.synchronization.SuggestionProviders.SUMMONABLE_ENTITIES;
+		case POTION_EFFECTS -> (context, builder) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.MOB_EFFECT.keySet(), builder);
 		default -> (context, builder) -> Suggestions.empty();
 		};
 	}
@@ -878,7 +879,7 @@ public class NMS_1_21_R1 extends NMS_Common {
 		}
 		return convertedCustomFunctions;
 	}
-	
+
 	@Override
 	public Set<NamespacedKey> getTags() {
 		Set<NamespacedKey> result = new HashSet<>();

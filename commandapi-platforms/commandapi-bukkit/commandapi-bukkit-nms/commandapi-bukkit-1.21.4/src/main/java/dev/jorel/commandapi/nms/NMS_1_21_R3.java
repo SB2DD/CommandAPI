@@ -916,6 +916,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 		};
 		case BIOMES -> _ArgumentSyntheticBiome()::listSuggestions;
 		case ENTITIES -> net.minecraft.commands.synchronization.SuggestionProviders.SUMMONABLE_ENTITIES;
+		case POTION_EFFECTS -> (context, builder) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.MOB_EFFECT.keySet(), builder);
 		default -> (context, builder) -> Suggestions.empty();
 		};
 	}
