@@ -415,6 +415,10 @@ This is the current roadmap for the CommandAPI (as of 30th April 2024):
             <td valign="top"><b>9.7.1</b></td>
             <td valign="top">???</td>
             <td valign="top">
+				<b>CommandAPI Changes:</b>
+                <ul>
+                    <li>https://github.com/CommandAPI/CommandAPI/pull/633 Adds an <code>AsyncOfflinePlayerArgument</code> to allow asynchronous fetching of an offline player</li>
+                </ul>
                 <b>Bug Fixes:</b>
                 <ul>
                     <li>Fixes <code>PotionEffectArgument.NamespacedKey</code> not having suggestions in some versions</li>
