@@ -148,7 +148,7 @@ jobs:
 
       - name: Upload CommandAPI (Bukkit) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CommandAPI (Bukkit plugin)
           path: |
@@ -158,7 +158,7 @@ jobs:
 
       - name: Upload CommandAPI (Velocity) plugin artifact
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }} # Only upload artifacts built from latest java on one OS
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CommandAPI (Velocity plugin)
           path: |
@@ -177,7 +177,7 @@ jobs:
         run: echo ${{ github.event.number }} > PR_NUMBER.txt
       - name: Archive PR number
         if: github.event_name == 'pull_request' && ${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.java_version }} == '21'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
             name: PR_NUMBER
             path: PR_NUMBER.txt
