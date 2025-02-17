@@ -11,6 +11,7 @@ import org.bukkit.help.HelpTopic;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -35,21 +36,26 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	static {
 		CommandDispatcher<?> commandDispatcher;
-		// If we're using this class, we're operating on a Paper server with Paper's Brigadier API
-		// The class io.papermc.paper.command.brigadier.PluginCommandNode exists
 		Constructor<?> commandNode;
 		try {
-			commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
-
-			Class<?> paperCommands = Class.forName("io.papermc.paper.command.brigadier.PaperCommands");
-			Object paperCommandsInstance = paperCommands.getField("INSTANCE").get(null);
+			Object paperCommandsInstance = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getField("INSTANCE").get(null);
 			Field dispatcherField = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getDeclaredField("dispatcher");
 			dispatcherField.setAccessible(true);
 			commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
-		} catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException e) {
+		} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
 			// This doesn't happen
-			commandNode = null;
 			commandDispatcher = null;
+		}
+
+		try {
+			commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
+		} catch (ClassNotFoundException | NoSuchMethodException e) {
+			try {
+				// If this happens, plugin commands on Paper are not identified with the PluginCommandNode anymore
+				commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandMeta").getDeclaredConstructor(PluginMeta.class, String.class, List.class);
+			} catch (ClassNotFoundException | NoSuchMethodException e1) {
+				commandNode = null;
+			}
 		}
 		staticDispatcher = commandDispatcher;
 		pluginCommandNodeConstructor = commandNode;
@@ -134,14 +140,33 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	@SuppressWarnings("unchecked")
 	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
 		try {
-			return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
-				commandNode.getLiteral(),
-				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
-				commandNode,
-				getDescription(commandNode.getLiteral())
-			);
+			if (pluginCommandNodeConstructor.getDeclaringClass().getSimpleName().equals("PluginCommandNode")) {
+				return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
+					commandNode.getLiteral(),
+					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					commandNode,
+					getDescription(commandNode.getLiteral())
+				);
+			} else {
+				setPluginCommandMeta(commandNode);
+				return commandNode;
+			}
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private void setPluginCommandMeta(LiteralCommandNode<Source> node) {
+		try {
+			Field metaField = node.getClass().getSuperclass().getDeclaredField("pluginCommandMeta");
+			metaField.setAccessible(true);
+			metaField.set(node, pluginCommandNodeConstructor.newInstance(
+				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+				getDescription(node.getLiteral()),
+				Collections.emptyList()
+			));
+		} catch (NoSuchFieldException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+			// This doesn't happen
 		}
 	}
 
