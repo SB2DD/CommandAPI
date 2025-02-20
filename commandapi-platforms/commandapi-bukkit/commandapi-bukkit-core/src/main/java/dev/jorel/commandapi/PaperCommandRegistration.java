@@ -24,29 +24,45 @@ import java.util.function.Supplier;
 public class PaperCommandRegistration<Source> extends CommandRegistrationStrategy<Source> {
 	// References to necessary methods
 	private final Supplier<CommandDispatcher<Source>> getBrigadierDispatcher;
+	private final Runnable reloadHelpTopics;
 	private final Predicate<CommandNode<Source>> isBukkitCommand;
 
 	// Store registered commands nodes for eventual reloads
 	private final RootCommandNode<Source> registeredNodes = new RootCommandNode<>();
 
-	private static final Constructor<?> pluginCommandNodeConstructor;
-	private static final CommandDispatcher<?> staticDispatcher;
+	private static final Object paperCommandsInstance;
+	private static final Field dispatcherField;
 
-	private final CommandDispatcher<Source> dispatcher;
+	private static final Constructor<?> pluginCommandNodeConstructor;
+	private static final Supplier<CommandDispatcher<?>> getPaperDispatcher;
 
 	static {
-		CommandDispatcher<?> commandDispatcher;
-		Constructor<?> commandNode;
+		Object paperCommandsInstanceObject = null;
+		Field dispatcherFieldObject = null;
+
 		try {
-			Object paperCommandsInstance = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getField("INSTANCE").get(null);
-			Field dispatcherField = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getDeclaredField("dispatcher");
-			dispatcherField.setAccessible(true);
-			commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
-		} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-			// This doesn't happen
-			commandDispatcher = null;
+			paperCommandsInstanceObject = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getField("INSTANCE").get(null);
+			dispatcherFieldObject = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getDeclaredField("dispatcher");
+		} catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
+			// Doesn't happen, or rather, shouldn't happen
 		}
 
+		paperCommandsInstance = paperCommandsInstanceObject;
+		dispatcherField = dispatcherFieldObject;
+		dispatcherField.setAccessible(true);
+
+		getPaperDispatcher = () -> {
+			CommandDispatcher<?> commandDispatcher;
+			try {
+				commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
+			} catch (IllegalAccessException e) {
+				// This doesn't happen
+				commandDispatcher = null;
+			}
+			return commandDispatcher;
+		};
+
+		Constructor<?> commandNode;
 		try {
 			commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
 		} catch (ClassNotFoundException | NoSuchMethodException e) {
@@ -57,14 +73,13 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				commandNode = null;
 			}
 		}
-		staticDispatcher = commandDispatcher;
 		pluginCommandNodeConstructor = commandNode;
 	}
 
-	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Predicate<CommandNode<Source>> isBukkitCommand) {
+	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Runnable reloadHelpTopics, Predicate<CommandNode<Source>> isBukkitCommand) {
 		this.getBrigadierDispatcher = getBrigadierDispatcher;
+		this.reloadHelpTopics = reloadHelpTopics;
 		this.isBukkitCommand = isBukkitCommand;
-		this.dispatcher = (CommandDispatcher<Source>) staticDispatcher;
 	}
 
 	// Provide access to internal functions that may be useful to developers
@@ -77,6 +92,11 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	 */
 	public boolean isBukkitCommand(CommandNode<Source> node) {
 		return isBukkitCommand.test(node);
+	}
+
+	@SuppressWarnings("unchecked")
+	public CommandDispatcher<Source> getPaperDispatcher() {
+		return (CommandDispatcher<Source>) getPaperDispatcher.get();
 	}
 
 	// Implement CommandRegistrationStrategy methods
@@ -105,8 +125,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		registeredNodes.addChild(namespacedCommandNode);
 
 		// Register commands
-		dispatcher.getRoot().addChild(commandNode);
-		dispatcher.getRoot().addChild(namespacedCommandNode);
+		getPaperDispatcher().getRoot().addChild(commandNode);
+		getPaperDispatcher().getRoot().addChild(namespacedCommandNode);
 
 		return commandNode;
 	}
@@ -114,7 +134,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
 		// Remove nodes from the  dispatcher
-		removeBrigadierCommands(getBrigadierDispatcher.get().getRoot(), commandName, unregisterNamespaces,
+		removeBrigadierCommands(getPaperDispatcher().getRoot(), commandName, unregisterNamespaces,
 			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
 			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
@@ -131,10 +151,11 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void preReloadDataPacks() {
-		RootCommandNode<Source> root = getBrigadierDispatcher.get().getRoot();
+		RootCommandNode<Source> root = getPaperDispatcher().getRoot();
 		for (CommandNode<Source> commandNode : registeredNodes.getChildren()) {
 			root.addChild(commandNode);
 		}
+		reloadHelpTopics.run();
 	}
 
 	@SuppressWarnings("unchecked")
