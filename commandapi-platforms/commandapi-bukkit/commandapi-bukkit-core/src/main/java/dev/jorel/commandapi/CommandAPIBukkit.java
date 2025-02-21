@@ -276,6 +276,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	}
 
 	void updateHelpForCommands(List<RegisteredCommand> commands) {
+		if (getPaper().isPaperBrigAPI()) return;
 		Map<String, HelpTopic> helpTopicsToAdd = new HashMap<>();
 
 		for (RegisteredCommand command : commands) {

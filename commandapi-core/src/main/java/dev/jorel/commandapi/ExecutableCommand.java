@@ -190,6 +190,7 @@ extends ExecutableCommand<Impl, CommandSender>
 	/**
 	 * Sets the full usage for this command. This is the usage which is
 	 * shown in the specific /help page for this command (e.g. /help mycommand).
+	 * @apiNote This method has no effect on Paper servers that have Paper's Brigadier API
 	 * @param usage the full usage for this command
 	 * @return this command builder
 	 */

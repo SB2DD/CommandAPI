@@ -6,14 +6,20 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.help.HelpTopic;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -184,7 +190,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			metaField.set(node, pluginCommandNodeConstructor.newInstance(
 				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
 				getDescription(node.getLiteral()),
-				Collections.emptyList()
+				getAliasesForCommand(node.getLiteral())
 			));
 		} catch (NoSuchFieldException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
 			// This doesn't happen
@@ -200,7 +206,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			} else {
 				namespaceStripped = commandName;
 			}
-			if (command.commandName().equals(namespaceStripped)) {
+			if (command.commandName().equals(namespaceStripped) || Arrays.asList(command.aliases()).contains(namespaceStripped)) {
 				Object helpTopic = command.helpTopic().orElse(null);
 				if (helpTopic != null) {
 					description = ((HelpTopic) helpTopic).getShortText();
@@ -213,6 +219,16 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			}
 		}
 		return description;
+	}
+
+	private List<String> getAliasesForCommand(String commandName) {
+		Set<String> aliases = new HashSet<>();
+		for (RegisteredCommand command : CommandAPI.getRegisteredCommands()) {
+			if (command.commandName().equals(commandName)) {
+				aliases.addAll(Arrays.asList(command.aliases()));
+			}
+		}
+		return new ArrayList<>(aliases);
 	}
 
 }
