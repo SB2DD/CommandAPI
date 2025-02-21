@@ -1071,7 +1071,12 @@ public class NMS_1_20_R4 extends NMS_Common {
 			}
 			return new PaperCommandRegistration<>(
 				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
-				() -> ((SimpleHelpMap) Bukkit.getServer().getHelpMap()).initializeCommands(),
+				() -> {
+					SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
+					helpMap.clear();
+					helpMap.initializeGeneralTopics();
+					helpMap.initializeCommands();
+				},
 				node -> bukkitCommandNode_bukkitBrigCommand.isInstance(node.getCommand())
 			);
 		}
