@@ -162,6 +162,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 			root.addChild(commandNode);
 		}
 		reloadHelpTopics.run();
+		CommandAPIBukkit.get().updateHelpForCommands(CommandAPI.getRegisteredCommands());
 	}
 
 	@SuppressWarnings("unchecked")
