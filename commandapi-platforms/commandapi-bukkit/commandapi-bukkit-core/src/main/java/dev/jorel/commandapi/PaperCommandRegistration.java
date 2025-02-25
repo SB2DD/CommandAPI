@@ -211,9 +211,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				if (helpTopic != null) {
 					description = ((HelpTopic) helpTopic).getShortText();
 				} else {
-					description = command.fullDescription()
-						.orElse(command.shortDescription()
-							.orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPlugin().getName() + " plugin."));
+					description = command.shortDescription().orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPlugin().getName() + " plugin.");
 				}
 				break;
 			}

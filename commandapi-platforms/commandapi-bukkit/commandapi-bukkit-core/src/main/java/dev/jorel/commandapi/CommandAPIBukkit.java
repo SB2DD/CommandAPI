@@ -276,10 +276,11 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	}
 
 	void updateHelpForCommands(List<RegisteredCommand> commands) {
-		if (getPaper().isPaperBrigAPI()) return;
 		Map<String, HelpTopic> helpTopicsToAdd = new HashMap<>();
 
 		for (RegisteredCommand command : commands) {
+			if (getPaper().isPaperBrigAPI() && !command.shouldGenerateHelpTopic()) continue;
+
 			// Don't override the plugin help topic
 			String commandPrefix = generateCommandHelpPrefix(command.commandName());
 			
