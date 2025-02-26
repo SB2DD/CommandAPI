@@ -6,8 +6,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import io.papermc.paper.plugin.configuration.PluginMeta;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.help.HelpTopic;
 
 import java.lang.reflect.Constructor;
@@ -15,10 +13,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -40,7 +36,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private static final Field dispatcherField;
 
 	private static final Constructor<?> pluginCommandNodeConstructor;
-	private static final Supplier<CommandDispatcher<?>> getPaperDispatcher;
+	private static final SafeVarHandle<CommandNode<?>, Object> metaField;
 
 	static {
 		Object paperCommandsInstanceObject = null;
@@ -49,7 +45,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		try {
 			paperCommandsInstanceObject = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getField("INSTANCE").get(null);
 			dispatcherFieldObject = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getDeclaredField("dispatcher");
-		} catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
+		} catch (ReflectiveOperationException e) {
 			// Doesn't happen, or rather, shouldn't happen
 		}
 
@@ -57,29 +53,22 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		dispatcherField = dispatcherFieldObject;
 		dispatcherField.setAccessible(true);
 
-		getPaperDispatcher = () -> {
-			CommandDispatcher<?> commandDispatcher;
-			try {
-				commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
-			} catch (IllegalAccessException e) {
-				// This doesn't happen
-				commandDispatcher = null;
-			}
-			return commandDispatcher;
-		};
-
 		Constructor<?> commandNode;
+		SafeVarHandle<CommandNode<?>, ?> metaFieldHandle = null;
 		try {
 			commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandNode").getDeclaredConstructor(String.class, PluginMeta.class, LiteralCommandNode.class, String.class);
 		} catch (ClassNotFoundException | NoSuchMethodException e) {
 			try {
 				// If this happens, plugin commands on Paper are not identified with the PluginCommandNode anymore
-				commandNode = Class.forName("io.papermc.paper.command.brigadier.PluginCommandMeta").getDeclaredConstructor(PluginMeta.class, String.class, List.class);
+				Class<?> pluginCommandMeta = Class.forName("io.papermc.paper.command.brigadier.PluginCommandMeta");
+				commandNode = pluginCommandMeta.getDeclaredConstructor(PluginMeta.class, String.class, List.class);
+				metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "pluginCommandMeta", "pluginCommandMeta", pluginCommandMeta);
 			} catch (ClassNotFoundException | NoSuchMethodException e1) {
 				commandNode = null;
 			}
 		}
 		pluginCommandNodeConstructor = commandNode;
+		metaField = (SafeVarHandle<CommandNode<?>, Object>) metaFieldHandle;
 	}
 
 	public PaperCommandRegistration(Supplier<CommandDispatcher<Source>> getBrigadierDispatcher, Runnable reloadHelpTopics, Predicate<CommandNode<Source>> isBukkitCommand) {
@@ -102,7 +91,14 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@SuppressWarnings("unchecked")
 	public CommandDispatcher<Source> getPaperDispatcher() {
-		return (CommandDispatcher<Source>) getPaperDispatcher.get();
+		CommandDispatcher<?> commandDispatcher;
+		try {
+			commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
+		} catch (IllegalAccessException e) {
+			// This doesn't happen
+			commandDispatcher = null;
+		}
+		return (CommandDispatcher<Source>) commandDispatcher;
 	}
 
 	// Implement CommandRegistrationStrategy methods
@@ -131,8 +127,9 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		registeredNodes.addChild(namespacedCommandNode);
 
 		// Register commands
-		getPaperDispatcher().getRoot().addChild(commandNode);
-		getPaperDispatcher().getRoot().addChild(namespacedCommandNode);
+		RootCommandNode<Source> root = getPaperDispatcher().getRoot();
+		root.addChild(commandNode);
+		root.addChild(namespacedCommandNode);
 
 		return commandNode;
 	}
@@ -186,44 +183,46 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	private void setPluginCommandMeta(LiteralCommandNode<Source> node) {
 		try {
-			Field metaField = node.getClass().getSuperclass().getDeclaredField("pluginCommandMeta");
-			metaField.setAccessible(true);
 			metaField.set(node, pluginCommandNodeConstructor.newInstance(
 				CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
 				getDescription(node.getLiteral()),
 				getAliasesForCommand(node.getLiteral())
 			));
-		} catch (NoSuchFieldException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+		} catch (ReflectiveOperationException e) {
 			// This doesn't happen
 		}
 	}
 
 	private String getDescription(String commandName) {
-		String description = "";
+		String namespaceStripped = "";
+		if (commandName.contains(":")) {
+			namespaceStripped = commandName.split(":")[1];
+		} else {
+			namespaceStripped = commandName;
+		}
 		for (RegisteredCommand command : CommandAPI.getRegisteredCommands()) {
-			String namespaceStripped = "";
-			if (commandName.contains(":")) {
-				namespaceStripped = commandName.split(":")[1];
-			} else {
-				namespaceStripped = commandName;
-			}
 			if (command.commandName().equals(namespaceStripped) || Arrays.asList(command.aliases()).contains(namespaceStripped)) {
 				Object helpTopic = command.helpTopic().orElse(null);
 				if (helpTopic != null) {
-					description = ((HelpTopic) helpTopic).getShortText();
+					return ((HelpTopic) helpTopic).getShortText();
 				} else {
-					description = command.shortDescription().orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPlugin().getName() + " plugin.");
+					return command.shortDescription().orElse("A command by the " + CommandAPIBukkit.getConfiguration().getPlugin().getName() + " plugin.");
 				}
-				break;
 			}
 		}
-		return description;
+		return "";
 	}
 
 	private List<String> getAliasesForCommand(String commandName) {
 		Set<String> aliases = new HashSet<>();
+		String namespaceStripped = "";
+		if (commandName.contains(":")) {
+			namespaceStripped = commandName.split(":")[1];
+		} else {
+			namespaceStripped = commandName;
+		}
 		for (RegisteredCommand command : CommandAPI.getRegisteredCommands()) {
-			if (command.commandName().equals(commandName)) {
+			if (command.commandName().equals(namespaceStripped)) {
 				aliases.addAll(Arrays.asList(command.aliases()));
 			}
 		}
