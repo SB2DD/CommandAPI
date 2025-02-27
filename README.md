@@ -421,6 +421,7 @@ This is the current roadmap for the CommandAPI (as of 30th April 2024):
                 </ul>
                 <b>Bug Fixes:</b>
                 <ul>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/578, https://github.com/CommandAPI/CommandAPI/issues/583, https://github.com/CommandAPI/CommandAPI/pull/629 Fixes <code>Bukkit#dispatchCommand()</code> not working after Paper's Brigadier API changes</li>
                     <li>Fixes <code>PotionEffectArgument.NamespacedKey</code> not having suggestions in some versions</li>
                 </ul>
             </td>

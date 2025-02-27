@@ -20,6 +20,7 @@ public class PaperImplementations {
 
 	private final boolean isPaperPresent;
 	private final boolean isFoliaPresent;
+	private final boolean isPaperBrigAPI;
 	private final NMS<?> nmsInstance;
 	private final Class<? extends CommandSender> feedbackForwardingCommandSender;
 	private final Class<? extends CommandSender> nullCommandSender;
@@ -54,6 +55,15 @@ public class PaperImplementations {
 		}
 
 		this.nullCommandSender = tempNullCommandSender;
+
+		boolean paperCommandSourceStackPresent;
+		try {
+			Class.forName("io.papermc.paper.command.brigadier.CommandSourceStack");
+			paperCommandSourceStackPresent = true;
+		} catch (ClassNotFoundException e) {
+			paperCommandSourceStackPresent = false;
+		}
+		this.isPaperBrigAPI = paperCommandSourceStackPresent;
 	}
 
 	/**
@@ -109,6 +119,13 @@ public class PaperImplementations {
 	 */
 	public boolean isPaperPresent() {
 		return this.isPaperPresent;
+	}
+
+	/**
+	 * @return whether we're running a Paper server with the Paper Brigadier command API
+	 */
+	public boolean isPaperBrigAPI() {
+		return this.isPaperBrigAPI;
 	}
 	
 	/**
