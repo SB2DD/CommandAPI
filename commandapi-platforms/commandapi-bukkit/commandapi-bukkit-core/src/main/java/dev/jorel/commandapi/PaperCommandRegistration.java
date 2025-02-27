@@ -43,8 +43,9 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		Field dispatcherFieldObject = null;
 
 		try {
-			paperCommandsInstanceObject = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getField("INSTANCE").get(null);
-			dispatcherFieldObject = Class.forName("io.papermc.paper.command.brigadier.PaperCommands").getDeclaredField("dispatcher");
+			Class<?> paperCommands = Class.forName("io.papermc.paper.command.brigadier.PaperCommands");
+			paperCommandsInstanceObject = paperCommands.getField("INSTANCE").get(null);
+			dispatcherFieldObject = paperCommands.getDeclaredField("dispatcher");
 		} catch (ReflectiveOperationException e) {
 			// Doesn't happen, or rather, shouldn't happen
 		}
@@ -91,14 +92,12 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@SuppressWarnings("unchecked")
 	public CommandDispatcher<Source> getPaperDispatcher() {
-		CommandDispatcher<?> commandDispatcher;
 		try {
-			commandDispatcher = (CommandDispatcher<?>) dispatcherField.get(paperCommandsInstance);
+			return (CommandDispatcher<Source>) dispatcherField.get(paperCommandsInstance);
 		} catch (IllegalAccessException e) {
 			// This doesn't happen
-			commandDispatcher = null;
+			return null;
 		}
-		return (CommandDispatcher<Source>) commandDispatcher;
 	}
 
 	// Implement CommandRegistrationStrategy methods
@@ -165,7 +164,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	@SuppressWarnings("unchecked")
 	private LiteralCommandNode<Source> asPluginCommand(LiteralCommandNode<Source> commandNode) {
 		try {
-			if (pluginCommandNodeConstructor.getDeclaringClass().getSimpleName().equals("PluginCommandNode")) {
+			if (metaField == null) {
 				return (LiteralCommandNode<Source>) pluginCommandNodeConstructor.newInstance(
 					commandNode.getLiteral(),
 					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
@@ -194,7 +193,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	}
 
 	private String getDescription(String commandName) {
-		String namespaceStripped = "";
+		String namespaceStripped;
 		if (commandName.contains(":")) {
 			namespaceStripped = commandName.split(":")[1];
 		} else {
@@ -215,7 +214,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	private List<String> getAliasesForCommand(String commandName) {
 		Set<String> aliases = new HashSet<>();
-		String namespaceStripped = "";
+		String namespaceStripped;
 		if (commandName.contains(":")) {
 			namespaceStripped = commandName.split(":")[1];
 		} else {
