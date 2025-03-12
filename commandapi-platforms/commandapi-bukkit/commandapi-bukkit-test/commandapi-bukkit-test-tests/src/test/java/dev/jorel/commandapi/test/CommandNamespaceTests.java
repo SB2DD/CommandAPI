@@ -51,7 +51,7 @@ public class CommandNamespaceTests extends TestBase {
 		SimpleCommandMap commandMap = mockPlatform.getSimpleCommandMap();
 		SpigotCommandRegistration<Object> spigotCommandRegistration = (SpigotCommandRegistration<Object>) mockPlatform.getCommandRegistrationStrategy();
 		for (CommandNode<Object> node : mockPlatform.getBrigadierDispatcher().getRoot().getChildren()) {
-			commandMap.register("minecraft", spigotCommandRegistration.wrapToVanillaCommandWrapper(node));
+			commandMap.register("commandapitest", spigotCommandRegistration.wrapToVanillaCommandWrapper(node));
 		}
 
 		// Run the CommandAPI's enable tasks, especially `fixNamespaces`
@@ -137,11 +137,11 @@ public class CommandNamespaceTests extends TestBase {
 		// Check contents of Bukkit CommandMap
 		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
-		assertNotNull(commandMap.getCommand("minecraft:test"));
+		assertNotNull(commandMap.getCommand("commandapitest:test"));
 
 		// Commands should run
 		assertStoresResult(player, "test alpha", results, "alpha");
-		assertStoresResult(player, "minecraft:test alpha", results, "alpha");
+		assertStoresResult(player, "commandapitest:test alpha", results, "alpha");
 
 		assertNoMoreResults(results);
 	}
@@ -174,6 +174,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertNotNull(rootNode.getChild("test"));
 		assertNotNull(rootNode.getChild("commandtest:test"));
 		assertNull(rootNode.getChild("minecraft:test"));
+		assertNull(rootNode.getChild("commandapitest:test"));
 
 		// Check contents of Bukkit CommandMap
 		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
@@ -281,19 +282,22 @@ public class CommandNamespaceTests extends TestBase {
 		// Check contents of Bukkit CommandMap
 		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
-		assertNotNull(commandMap.getCommand("minecraft:test"));
+		assertNull(commandMap.getCommand("minecraft:test"));
+		assertNotNull(commandMap.getCommand("commandapitest:test"));
 		assertNotNull(commandMap.getCommand("alpha"));
-		assertNotNull(commandMap.getCommand("minecraft:alpha"));
+		assertNull(commandMap.getCommand("minecraft:alpha"));
+		assertNotNull(commandMap.getCommand("commandapitest:alpha"));
 		assertNotNull(commandMap.getCommand("beta"));
-		assertNotNull(commandMap.getCommand("minecraft:beta"));
+		assertNull(commandMap.getCommand("minecraft:beta"));
+		assertNotNull(commandMap.getCommand("commandapitest:beta"));
 
 		// Commands should run
 		assertStoresResult(player, "test discord", results, "discord");
 		assertStoresResult(player, "alpha discord", results, "discord");
 		assertStoresResult(player, "beta discord", results, "discord");
-		assertStoresResult(player, "minecraft:test discord", results, "discord");
-		assertStoresResult(player, "minecraft:alpha discord", results, "discord");
-		assertStoresResult(player, "minecraft:beta discord", results, "discord");
+		assertStoresResult(player, "commandapitest:test discord", results, "discord");
+		assertStoresResult(player, "commandapitest:alpha discord", results, "discord");
+		assertStoresResult(player, "commandapitest:beta discord", results, "discord");
 
 		assertNoMoreResults(results);
 	}
@@ -546,19 +550,20 @@ public class CommandNamespaceTests extends TestBase {
 		RootCommandNode<Object> root = MockPlatform.getInstance().getBrigadierDispatcher().getRoot();
 		assertNotNull(root.getChild("test"));
 		assertNotNull(root.getChild("custom:test"));
-		// The `minecraft:test` node should exist in the Brigadier map so the `minecraft:test` VanillaCommandWrapper
+		// The `commandapitest:test` node should exist in the Brigadier map so the `commandapitest:test` VanillaCommandWrapper
 		//  can properly execute the command separately from the `custom:test` b branch
-		assertNotNull(root.getChild("minecraft:test"));
+		assertNotNull(root.getChild("commandapitest:test"));
 
 		CommandMap commandMap = MockPlatform.getInstance().getSimpleCommandMap();
 		assertNotNull(commandMap.getCommand("test"));
-		assertNotNull(commandMap.getCommand("minecraft:test"));
+		assertNotNull(commandMap.getCommand("commandapitest:test"));
 		assertNotNull(commandMap.getCommand("custom:test"));
+		assertNull(commandMap.getCommand("minecraft:test"));
 		assertNull(commandMap.getCommand("minecraft:custom:test"));
 
 		assertStoresResult(player, "test a", results, "a");
 		assertStoresResult(player, "test b", results, "b");
-		assertStoresResult(player, "minecraft:test a", results, "a");
+		assertStoresResult(player, "commandapitest:test a", results, "a");
 		assertStoresResult(player, "custom:test b", results, "b");
 
 		assertThrowsWithMessage(
@@ -568,8 +573,8 @@ public class CommandNamespaceTests extends TestBase {
 		);
 		assertThrowsWithMessage(
 			CommandSyntaxException.class,
-			"Incorrect argument for command at position 15: ...raft:test <--[HERE]",
-			() -> server.dispatchThrowableBrigadierCommand(player, "minecraft:test b")
+			"Incorrect argument for command at position 20: ...test:test <--[HERE]",
+			() -> server.dispatchThrowableBrigadierCommand(player, "commandapitest:test b")
 		);
 
 		assertNoMoreResults(results);
@@ -603,7 +608,7 @@ public class CommandNamespaceTests extends TestBase {
 				)
 			);
 
-		// Make sure the default registration with the minecraft: namespace works
+		// Make sure the default registration with the commandapitest: namespace works
 		command.register();
 
 		if (!enableBeforeRegistering) {
@@ -614,7 +619,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertEquals("a", results.get());
 		assertEquals("alpha", results.get());
 
-		server.dispatchCommand(player, "minecraft:test a alpha");
+		server.dispatchCommand(player, "commandapitest:test a alpha");
 		assertEquals("a", results.get());
 		assertEquals("alpha", results.get());
 
@@ -622,7 +627,7 @@ public class CommandNamespaceTests extends TestBase {
 		assertEquals("b", results.get());
 		assertEquals("123", results.get());
 
-		server.dispatchCommand(player, "minecraft:test b 123");
+		server.dispatchCommand(player, "commandapitest:test b 123");
 		assertEquals("b", results.get());
 		assertEquals("123", results.get());
 
@@ -800,12 +805,12 @@ public class CommandNamespaceTests extends TestBase {
 		}
 
 		assertPermissionCheckFails(player, "test");
-		assertPermissionCheckFails(player, "minecraft:test");
+		assertPermissionCheckFails(player, "commandapitest:test");
 
 		player.addAttachment(super.plugin, "permission", true);
 
 		assertStoresResult(player, "test", commandRan, "ran");
-		assertStoresResult(player, "minecraft:test", commandRan, "ran");
+		assertStoresResult(player, "commandapitest:test", commandRan, "ran");
 
 		assertNoMoreResults(commandRan);
 	}
@@ -931,8 +936,8 @@ public class CommandNamespaceTests extends TestBase {
 		CommandAPIBukkitConfig config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin());
 		InternalBukkitConfig internalConfig = new InternalBukkitConfig(config);
 
-		// The namespace wasn't changed so it should default to minecraft
-		assertEquals("minecraft", internalConfig.getNamespace());
+		// The namespace wasn't changed so it should default to commandapitest
+		assertEquals("commandapitest", internalConfig.getNamespace());
 
 		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin());
 		CommandAPIBukkitConfig finalConfig = config;
@@ -944,8 +949,8 @@ public class CommandNamespaceTests extends TestBase {
 			.setNamespace("");
 		internalConfig = new InternalBukkitConfig(config);
 
-		// The namespace was set to an empty namespace so this should result in the default minecraft namespace
-		assertEquals("minecraft", internalConfig.getNamespace());
+		// The namespace was set to an empty namespace so this should result in the default commandapitest namespace
+		assertEquals("commandapitest", internalConfig.getNamespace());
 
 		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
 			.setNamespace("custom");
@@ -983,8 +988,8 @@ public class CommandNamespaceTests extends TestBase {
 			.setNamespace("Custom");
 		internalConfig = new InternalBukkitConfig(config);
 
-		// The namespace uses invalid characters so the namespace should default to minecraft
-		assertEquals("minecraft", internalConfig.getNamespace());
+		// The namespace uses invalid characters so the namespace should default to commandapitest
+		assertEquals("commandapitest", internalConfig.getNamespace());
 
 		Player player = enableWithNamespaces();
 
@@ -994,17 +999,17 @@ public class CommandNamespaceTests extends TestBase {
 
 		command.register("");
 
-		// The command should be registered with the minecraft namespace because the namespace was empty
+		// The command should be registered with the commandapitest namespace because the namespace was empty
 		assertTrue(server.dispatchCommand(player, "test"));
-		assertTrue(server.dispatchCommand(player, "minecraft:test"));
+		assertTrue(server.dispatchCommand(player, "commandapitest:test"));
 
 		CommandAPI.unregister("test", true);
 
 		command.register("Command");
 
-		// The command should be registered with the minecraft namespace because the namespace was invalid
+		// The command should be registered with the commandapitest namespace because the namespace was invalid
 		assertTrue(server.dispatchCommand(player, "test"));
-		assertTrue(server.dispatchCommand(player, "minecraft:test"));
+		assertTrue(server.dispatchCommand(player, "commandapitest:test"));
 
 		CommandAPI.unregister("test", true);
 

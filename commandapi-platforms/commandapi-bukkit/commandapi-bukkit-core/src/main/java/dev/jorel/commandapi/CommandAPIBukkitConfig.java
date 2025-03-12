@@ -23,11 +23,7 @@ public class CommandAPIBukkitConfig extends CommandAPIConfig<CommandAPIBukkitCon
 	 */
 	public CommandAPIBukkitConfig(JavaPlugin plugin) {
 		this.plugin = plugin;
-
-		// TODO: Not sure about this but I really want to avoid setting minecraft as the default namespace
-		//  it just isn't good practice and the namespace doesn't make sense since registered commands are not minecraft commands
-		//  Therefore I think it's fine to fall back to commandapi even though it might be a bit weird
-		super.setNamespace(CommandAPI.isShaded ? plugin.getName().toLowerCase() : "commandapi");
+		super.setNamespace(plugin.getName().toLowerCase());
 	}
 
 	/**

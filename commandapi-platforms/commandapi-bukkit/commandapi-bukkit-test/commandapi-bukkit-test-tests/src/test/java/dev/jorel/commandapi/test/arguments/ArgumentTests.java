@@ -83,24 +83,37 @@ class ArgumentTests extends TestBase {
 		assertTrue(commandResult);
 		assertEquals("success myvalue", player.nextMessage());
 		assertEquals("""
-				{
-				  "type": "root",
-				  "children": {
-				    "test": {
-				      "type": "literal",
-				      "children": {
-				        "value": {
-				          "type": "argument",
-				          "parser": "brigadier:string",
-				          "properties": {
-				            "type": "word"
-				          },
-				          "executable": true
-				        }
-				      }
-				    }
-				  }
-				}""", getDispatcherString());
+			{
+			  "type": "root",
+			  "children": {
+			    "commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "value": {
+			          "type": "argument",
+			          "parser": "brigadier:string",
+			          "properties": {
+			            "type": "word"
+			          },
+			          "executable": true
+			        }
+			      }
+			    },
+			    "test": {
+			      "type": "literal",
+			      "children": {
+			        "value": {
+			          "type": "argument",
+			          "parser": "brigadier:string",
+			          "properties": {
+			            "type": "word"
+			          },
+			          "executable": true
+			        }
+			      }
+			    }
+			  }
+			}""", getDispatcherString());
 		
 		// Negative test
 		server.dispatchCommand(player, "test myvalue");
@@ -150,6 +163,80 @@ class ArgumentTests extends TestBase {
 			{
 			  "type": "root",
 			  "children": {
+			    "commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "1": {
+			          "type": "literal",
+			          "children": {
+			            "1": {
+			              "type": "literal",
+			              "children": {
+			                "1": {
+			                  "type": "literal",
+			                  "executable": true
+			                },
+			                "2": {
+			                  "type": "literal",
+			                  "executable": true
+			                }
+			              },
+			              "executable": true
+			            },
+			            "2": {
+			              "type": "literal",
+			              "children": {
+			                "1": {
+			                  "type": "literal",
+			                  "executable": true
+			                },
+			                "2": {
+			                  "type": "literal",
+			                  "executable": true
+			                }
+			              },
+			              "executable": true
+			            }
+			          },
+			          "executable": true
+			        },
+			        "2": {
+			          "type": "literal",
+			          "children": {
+			            "1": {
+			              "type": "literal",
+			              "children": {
+			                "1": {
+			                  "type": "literal",
+			                  "executable": true
+			                },
+			                "2": {
+			                  "type": "literal",
+			                  "executable": true
+			                }
+			              },
+			              "executable": true
+			            },
+			            "2": {
+			              "type": "literal",
+			              "children": {
+			                "1": {
+			                  "type": "literal",
+			                  "executable": true
+			                },
+			                "2": {
+			                  "type": "literal",
+			                  "executable": true
+			                }
+			              },
+			              "executable": true
+			            }
+			          },
+			          "executable": true
+			        }
+			      },
+			      "executable": true
+			    },
 			    "test": {
 			      "type": "literal",
 			      "children": {

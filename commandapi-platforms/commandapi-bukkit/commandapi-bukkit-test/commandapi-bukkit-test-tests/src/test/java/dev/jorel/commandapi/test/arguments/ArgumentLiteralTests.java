@@ -118,6 +118,15 @@ class ArgumentLiteralTests extends TestBase {
 			{
 			  "type": "root",
 			  "children": {
+			    "commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "literal": {
+			          "type": "literal",
+			          "executable": true
+			        }
+			      }
+			    },
 			    "test": {
 			      "type": "literal",
 			      "children": {

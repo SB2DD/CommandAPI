@@ -21,25 +21,6 @@ public class CommandAPI {
 
 	static {
 		onDisable();
-		determineShaded();
-	}
-
-	// Some package private stuff to determine shading for the default namespace
-	static boolean isShaded = false;
-
-	static void determineShaded() {
-		// We assume a shaded CommandAPI when this class isn't in the dev.jorel.commandapi package
-		// and the dev.jorel.commandapi.CommandAPIMain class isn't present
-		boolean commandAPIMain = false;
-		try {
-			Class.forName("dev.jorel.commandapi.CommandAPIMain");
-			commandAPIMain = true;
-		} catch (ClassNotFoundException ignored) {
-		}
-
-		if (!commandAPIMain) {
-			isShaded = true;
-		}
 	}
 
 	private static boolean canRegister;

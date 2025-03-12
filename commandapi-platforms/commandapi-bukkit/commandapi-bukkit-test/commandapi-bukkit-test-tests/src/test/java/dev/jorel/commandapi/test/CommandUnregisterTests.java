@@ -27,6 +27,19 @@ class CommandUnregisterTests extends TestBase {
 			{
 			  "type": "root",
 			  "children": {
+			    "commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "string": {
+			          "type": "argument",
+			          "parser": "brigadier:string",
+			          "properties": {
+			            "type": "word"
+			          },
+			          "executable": true
+			        }
+			      }
+			    },
 			    "test": {
 			      "type": "literal",
 			      "children": {
@@ -40,7 +53,7 @@ class CommandUnregisterTests extends TestBase {
 			        }
 			      }
 			    },
-			    "minecraft:test": {
+			    "commandapitest:commandapitest:test": {
 			      "type": "literal",
 			      "children": {
 			        "string": {
@@ -60,7 +73,20 @@ class CommandUnregisterTests extends TestBase {
 			{
 			  "type": "root",
 			  "children": {
-			    "minecraft:test": {
+			    "commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "string": {
+			          "type": "argument",
+			          "parser": "brigadier:string",
+			          "properties": {
+			            "type": "word"
+			          },
+			          "executable": true
+			        }
+			      }
+			    },
+			    "commandapitest:commandapitest:test": {
 			      "type": "literal",
 			      "children": {
 			        "string": {
@@ -92,13 +118,41 @@ class CommandUnregisterTests extends TestBase {
 			          "executable": true
 			        }
 			      }
+			    },
+			    "commandapitest:commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "string": {
+			          "type": "argument",
+			          "parser": "brigadier:string",
+			          "properties": {
+			            "type": "word"
+			          },
+			          "executable": true
+			        }
+			      }
 			    }
 			  }
 			}""";
 
-		static String EMPTY = """
+		static String ONLY_NAMESPACED_ALIAS = """
 			{
-			  "type": "root"
+			  "type": "root",
+			  "children": {
+			    "commandapitest:commandapitest:test": {
+			      "type": "literal",
+			      "children": {
+			        "string": {
+			          "type": "argument",
+			          "parser": "brigadier:string",
+			          "properties": {
+			            "type": "word"
+			          },
+			          "executable": true
+			        }
+			      }
+			    }
+			  }
 			}""";
 	}
 
@@ -118,7 +172,7 @@ class CommandUnregisterTests extends TestBase {
 		// Set up a Vanilla command
 		vanillaResults = Mut.of();
 		new CommandAPICommand("test")
-			.withAliases("minecraft:test")
+			.withAliases("commandapitest:test")
 			.withArguments(new StringArgument("string"))
 			.executes((sender, args) -> {
 				vanillaResults.set(args.getUnchecked(0));
@@ -128,7 +182,7 @@ class CommandUnregisterTests extends TestBase {
 		assertEquals(BRIG_TREE.FULL, getDispatcherString());
 
 		assertStoresResult(player, "test word", vanillaResults, "word");
-		assertStoresResult(player, "minecraft:test word", vanillaResults, "word");
+		assertStoresResult(player, "commandapitest:test word", vanillaResults, "word");
 
 		// Set up a Bukkit command
 		commandMap = CommandAPIBukkit.get().getSimpleCommandMap();
@@ -176,8 +230,8 @@ class CommandUnregisterTests extends TestBase {
 
 		// test goes to bukkit:test
 		assertStoresResult(player, "test word", bukkitResults, "word");
-		// minecraft:test passes
-		assertStoresResult(player, "minecraft:test word", vanillaResults, "word");
+		// commandapitest:test passes
+		assertStoresResult(player, "commandapitest:test word", vanillaResults, "word");
 
 
 		// Bukkit unchanged
@@ -195,7 +249,7 @@ class CommandUnregisterTests extends TestBase {
 	@Test
 	void testUnregisterNamespace() {
 		// unregisterNamespaces: false, unregisterBukkit: false
-		CommandAPI.unregister("minecraft:test");
+		CommandAPI.unregister("commandapitest:test");
 
 		// Only test left in the tree
 		assertEquals(BRIG_TREE.NO_NAMESPACE, getDispatcherString());
@@ -203,7 +257,7 @@ class CommandUnregisterTests extends TestBase {
 		// test goes to bukkit:test
 		assertStoresResult(player, "test word", bukkitResults, "word");
 		// minecraft:test fails
-		assertCommandFailsWith(player, "minecraft:test word",
+		assertCommandFailsWith(player, "commandapitest:test word",
 			"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
 
 
@@ -226,12 +280,12 @@ class CommandUnregisterTests extends TestBase {
 		CommandAPI.unregister("test", true);
 
 		// No test command in tree
-		assertEquals(BRIG_TREE.EMPTY, getDispatcherString());
+		assertEquals(BRIG_TREE.ONLY_NAMESPACED_ALIAS, getDispatcherString());
 
 		// test goes to bukkit:test
 		assertStoresResult(player, "test word", bukkitResults, "word");
 		// minecraft:test fails
-		assertCommandFailsWith(player, "minecraft:test word",
+		assertCommandFailsWith(player, "commandapitest:test word",
 			"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
 
 
@@ -258,7 +312,7 @@ class CommandUnregisterTests extends TestBase {
 
 		// Both pass
 		assertStoresResult(player, "test word", vanillaResults, "word");
-		assertStoresResult(player, "minecraft:test word", vanillaResults, "word");
+		assertStoresResult(player, "commandapitest:test word", vanillaResults, "word");
 
 
 		// Only bukkit:test left in the map
@@ -285,8 +339,8 @@ class CommandUnregisterTests extends TestBase {
 
 		// test goes to bukkit:test
 		assertStoresResult(player, "test word", bukkitResults, "word");
-		// minecraft:test passes
-		assertStoresResult(player, "minecraft:test word", vanillaResults, "word");
+		// commandapitest:test passes
+		assertStoresResult(player, "commandapitest:test word", vanillaResults, "word");
 
 
 		// Only test left in the map
@@ -315,7 +369,7 @@ class CommandUnregisterTests extends TestBase {
 
 		// Both pass
 		assertStoresResult(player, "test word", vanillaResults, "word");
-		assertStoresResult(player, "minecraft:test word", vanillaResults, "word");
+		assertStoresResult(player, "commandapitest:test word", vanillaResults, "word");
 
 
 		// No test command in the map
