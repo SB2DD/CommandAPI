@@ -257,31 +257,12 @@ class CommandRegistrationTests extends TestBase {
 			)
 			.executesPlayer(P_EXEC);
 
-		commandWithDuplicateLiteralArgumentNames.register();
+		commandWithDuplicateLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
 				  "type": "root",
 				  "children": {
-				    "commandapitest:test": {
-				      "type": "literal",
-				      "children": {
-				        "alice": {
-				          "type": "literal",
-				          "children": {
-				            "bob": {
-				              "type": "literal",
-				              "children": {
-				                "alice": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "test": {
 				      "type": "literal",
 				      "children": {
@@ -315,93 +296,12 @@ class CommandRegistrationTests extends TestBase {
 			)
 			.executesPlayer(P_EXEC);
 
-		commandWithDuplicateMultiLiteralArgumentNames.register();
+		commandWithDuplicateMultiLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
 				  "type": "root",
 				  "children": {
-				    "commandapitest:test": {
-				      "type": "literal",
-				      "children": {
-				        "alice": {
-				          "type": "literal",
-				          "children": {
-				            "bob": {
-				              "type": "literal",
-				              "children": {
-				                "alice": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "test": {
 				      "type": "literal",
 				      "children": {
@@ -523,31 +423,12 @@ class CommandRegistrationTests extends TestBase {
 				)
 			);
 
-		commandWithDuplicateLiteralArgumentNames.register();
+		commandWithDuplicateLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
 				  "type": "root",
 				  "children": {
-				    "commandapitest:test": {
-				      "type": "literal",
-				      "children": {
-				        "alice": {
-				          "type": "literal",
-				          "children": {
-				            "bob": {
-				              "type": "literal",
-				              "children": {
-				                "alice": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "test": {
 				      "type": "literal",
 				      "children": {
@@ -583,93 +464,12 @@ class CommandRegistrationTests extends TestBase {
 				)
 			);
 
-		commandWithDuplicateMultiLiteralArgumentNames.register();
+		commandWithDuplicateMultiLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
 				  "type": "root",
 				  "children": {
-				    "commandapitest:test": {
-				      "type": "literal",
-				      "children": {
-				        "alice": {
-				          "type": "literal",
-				          "children": {
-				            "bob": {
-				              "type": "literal",
-				              "children": {
-				                "alice": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "test": {
 				      "type": "literal",
 				      "children": {
@@ -763,145 +563,12 @@ class CommandRegistrationTests extends TestBase {
 			.then(new LiteralArgument("path3").then(new StringArgument("alice").executesPlayer(P_EXEC)))
 			.then(new LiteralArgument("path4").then(new StringArgument("alice").executesPlayer(P_EXEC)));
 
-		commandWithDuplicateNamesSeparated.register();
+		commandWithDuplicateNamesSeparated.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
 				  "type": "root",
 				  "children": {
-				    "commandapitest:test": {
-				      "type": "literal",
-				      "children": {
-				        "alice": {
-				          "type": "literal",
-				          "children": {
-				            "bob": {
-				              "type": "literal",
-				              "children": {
-				                "alice": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "path1": {
-				          "type": "literal",
-				          "children": {
-				            "alice": {
-				              "type": "argument",
-				              "parser": "brigadier:string",
-				              "properties": {
-				                "type": "word"
-				              },
-				              "executable": true
-				            }
-				          }
-				        },
-				        "path2": {
-				          "type": "literal",
-				          "children": {
-				            "alice": {
-				              "type": "argument",
-				              "parser": "brigadier:string",
-				              "properties": {
-				                "type": "word"
-				              },
-				              "executable": true
-				            }
-				          }
-				        },
-				        "path3": {
-				          "type": "literal",
-				          "children": {
-				            "alice": {
-				              "type": "argument",
-				              "parser": "brigadier:string",
-				              "properties": {
-				                "type": "word"
-				              },
-				              "executable": true
-				            }
-				          }
-				        },
-				        "path4": {
-				          "type": "literal",
-				          "children": {
-				            "alice": {
-				              "type": "argument",
-				              "parser": "brigadier:string",
-				              "properties": {
-				                "type": "word"
-				              },
-				              "executable": true
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "test": {
 				      "type": "literal",
 				      "children": {
@@ -1052,32 +719,13 @@ class CommandRegistrationTests extends TestBase {
 			new LiteralArgument("b"),
 			new LiteralArgument("c")
 				.executesPlayer(P_EXEC)
-		).register();
+		).register("minecraft");
 
 		// Command added to tree
 		assertEquals("""
 			{
 			  "type": "root",
 			  "children": {
-			    "commandapitest:test": {
-			      "type": "literal",
-			      "children": {
-			        "a": {
-			          "type": "literal",
-			          "children": {
-			            "b": {
-			              "type": "literal",
-			              "children": {
-			                "c": {
-			                  "type": "literal",
-			                  "executable": true
-			                }
-			              }
-			            }
-			          }
-			        }
-			      }
-			    },
 			    "test": {
 			      "type": "literal",
 			      "children": {

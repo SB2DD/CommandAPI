@@ -112,21 +112,12 @@ class ArgumentLiteralTests extends TestBase {
 		new CommandAPICommand("test")
 			.withArguments(new LiteralArgument("literal"))
 			.executesPlayer(P_EXEC)
-			.register();
+			.register("minecraft");
 
 		assertEquals("""
 			{
 			  "type": "root",
 			  "children": {
-			    "commandapitest:test": {
-			      "type": "literal",
-			      "children": {
-			        "literal": {
-			          "type": "literal",
-			          "executable": true
-			        }
-			      }
-			    },
 			    "test": {
 			      "type": "literal",
 			      "children": {

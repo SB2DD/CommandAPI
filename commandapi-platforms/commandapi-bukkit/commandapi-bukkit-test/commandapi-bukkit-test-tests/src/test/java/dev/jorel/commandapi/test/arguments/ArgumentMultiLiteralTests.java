@@ -49,7 +49,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				new MultiLiteralArgument("literal2", "option1", "option2", "option3")
 			)
 			.executesPlayer(P_EXEC)
-			.register();
+			.register("minecraft");
 
 		new CommandTree("command2")
 			.then(
@@ -58,7 +58,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 						.executesPlayer(P_EXEC)
 				)
 			)
-			.register();
+			.register("minecraft");
 
 		// Combining arguments shouldn't affect unpacking
 		new CommandAPICommand("command3")
@@ -69,7 +69,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				)
 			)
 			.executesPlayer(P_EXEC)
-			.register();
+			.register("minecraft");
 
 		new CommandTree("command4")
 			.then(
@@ -79,126 +79,14 @@ public class ArgumentMultiLiteralTests extends TestBase {
 					)
 					.executesPlayer(P_EXEC)
 			)
-			.register();
+			.register("minecraft");
 
 		// Make sure all the commands were set up in the tree correctly
 		assertEquals("""
 				{
 				  "type": "root",
 				  "children": {
-				    "commandapitest:command1": {
-				      "type": "literal",
-				      "children": {
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
-				          }
-				        },
-				        "option3": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "command1": {
-				      "type": "literal",
-				      "children": {
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
-				          }
-				        },
-				        "option3": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "executable": true
-				            },
-				            "option3": {
-				              "type": "literal",
-				              "executable": true
-				            }
-				          }
-				        }
-				      }
-				    },
-				    "commandapitest:command2": {
 				      "type": "literal",
 				      "children": {
 				        "option1": {
@@ -310,141 +198,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				        }
 				      }
 				    },
-				    "commandapitest:command3": {
-				      "type": "literal",
-				      "children": {
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        }
-				      }
-				    },
 				    "command3": {
-				      "type": "literal",
-				      "children": {
-				        "option1": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        },
-				        "option2": {
-				          "type": "literal",
-				          "children": {
-				            "option1": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            },
-				            "option2": {
-				              "type": "literal",
-				              "children": {
-				                "option1": {
-				                  "type": "literal",
-				                  "executable": true
-				                },
-				                "option2": {
-				                  "type": "literal",
-				                  "executable": true
-				                }
-				              }
-				            }
-				          }
-				        }
-				      }
-				    },
-				    "commandapitest:command4": {
 				      "type": "literal",
 				      "children": {
 				        "option1": {

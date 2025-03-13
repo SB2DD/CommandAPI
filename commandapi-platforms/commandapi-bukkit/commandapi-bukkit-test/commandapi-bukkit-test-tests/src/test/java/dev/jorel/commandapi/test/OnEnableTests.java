@@ -72,7 +72,7 @@ class OnEnableTests extends TestBase {
 			.executes((sender, args) -> {
 				results.set(args.getUnchecked(0));
 			})
-			.register();
+			.register("minecraft");
 
 		// Update commands should have been called for all players on the server
 		Mockito.verify(updateCommandsPlayer, Mockito.times(1)).updateCommands();
@@ -82,19 +82,6 @@ class OnEnableTests extends TestBase {
 			{
 			  "type": "root",
 			  "children": {
-			    "commandapitest:command": {
-			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
 			    "command": {
 			      "type": "literal",
 			      "children": {
@@ -108,33 +95,7 @@ class OnEnableTests extends TestBase {
 			        }
 			      }
 			    },
-			    "commandapitest:alias1": {
-			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
 			    "alias1": {
-			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
-			    "commandapitest:alias2": {
 			      "type": "literal",
 			      "children": {
 			        "argument": {
@@ -180,9 +141,9 @@ class OnEnableTests extends TestBase {
 		assertTrue(spigotCommandRegistration.isVanillaCommandWrapper(alias2Command));
 
 		// Make sure namespaces were set up as well
-		assertNotNull(commandMap.getCommand("commandapitest:command"));
-		assertNotNull(commandMap.getCommand("commandapitest:alias1"));
-		assertNotNull(commandMap.getCommand("commandapitest:alias2"));
+		assertEquals(mainCommand, commandMap.getCommand("minecraft:command"));
+		assertEquals(alias1Command, commandMap.getCommand("minecraft:alias1"));
+		assertEquals(alias2Command, commandMap.getCommand("minecraft:alias2"));
 
 		// Make sure permissions were added to Bukkit commands
 		assertEquals("permission", mainCommand.getPermission());
@@ -198,9 +159,9 @@ class OnEnableTests extends TestBase {
 		assertNotNull(resourcesRoot.getChild("alias2"));
 
 		// Namespaces should be in the resources dispatcher too
-		assertNotNull(resourcesRoot.getChild("commandapitest:command"));
-		assertNotNull(resourcesRoot.getChild("commandapitest:alias1"));
-		assertNotNull(resourcesRoot.getChild("commandapitest:alias2"));
+		assertNotNull(resourcesRoot.getChild("minecraft:command"));
+		assertNotNull(resourcesRoot.getChild("minecraft:alias1"));
+		assertNotNull(resourcesRoot.getChild("minecraft:alias2"));
 
 
 		// Check the help topic was added
@@ -222,9 +183,9 @@ class OnEnableTests extends TestBase {
 		assertStoresResult(runCommandsPlayer, "command argument", results, "argument");
 		assertStoresResult(runCommandsPlayer, "alias1 argument", results, "argument");
 		assertStoresResult(runCommandsPlayer, "alias2 argument", results, "argument");
-		assertStoresResult(runCommandsPlayer, "commandapitest:command argument", results, "argument");
-		assertStoresResult(runCommandsPlayer, "commandapitest:alias1 argument", results, "argument");
-		assertStoresResult(runCommandsPlayer, "commandapitest:alias2 argument", results, "argument");
+		assertStoresResult(runCommandsPlayer, "minecraft:command argument", results, "argument");
+		assertStoresResult(runCommandsPlayer, "minecraft:alias1 argument", results, "argument");
+		assertStoresResult(runCommandsPlayer, "minecraft:alias2 argument", results, "argument");
 
 
 		// Unregister just the main command
@@ -238,46 +199,7 @@ class OnEnableTests extends TestBase {
 			{
 			  "type": "root",
 			  "children": {
-			    "commandapitest:command": {
-			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
-			    "commandapitest:alias1": {
-			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
 			    "alias1": {
-			      "type": "literal",
-			      "children": {
-			        "argument": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
-			    "commandapitest:alias2": {
 			      "type": "literal",
 			      "children": {
 			        "argument": {
@@ -311,14 +233,14 @@ class OnEnableTests extends TestBase {
 		assertNull(commandMap.getCommand("command"));
 
 		// Namespace should still be there
-		assertNotNull(commandMap.getCommand("commandapitest:command"));
+		assertEquals(mainCommand, commandMap.getCommand("minecraft:command"));
 
 
 		// Command should be removed from resources dispatcher
 		assertNull(resourcesRoot.getChild("command"));
 
 		// Namespace should still be there
-		assertNotNull(resourcesRoot.getChild("commandapitest:command"));
+		assertNotNull(resourcesRoot.getChild("minecraft:command"));
 
 
 		// Help topic should be gone
@@ -345,13 +267,13 @@ class OnEnableTests extends TestBase {
 		Mockito.verify(updateCommandsPlayer, Mockito.times(3)).updateCommands();
 
 		// Namespace should be gone from Bukkit's map
-		assertNull(commandMap.getCommand("commandapitest:command"));
+		assertNull(commandMap.getCommand("minecraft:command"));
 
 		// Namespace should be gone from resources dispatcher
-		assertNull(resourcesRoot.getChild("commandapitest:command"));
+		assertNull(resourcesRoot.getChild("minecraft:command"));
 
 		// Namespace should fail
-		assertCommandFailsWith(runCommandsPlayer, "commandapitest:command argument",
+		assertCommandFailsWith(runCommandsPlayer, "minecraft:command argument",
 				"Unknown or incomplete command, see below for error at position 0: <--[HERE]");
 
 		assertNoMoreResults(results);

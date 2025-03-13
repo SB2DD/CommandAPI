@@ -76,44 +76,31 @@ class ArgumentTests extends TestBase {
 				String value = (String) args.get(0);
 				player.sendMessage("success " + value);
 			})
-			.register();
+			.register("minecraft");
 
 		PlayerMock player = server.addPlayer();
 		boolean commandResult = server.dispatchCommand(player, "test myvalue");
 		assertTrue(commandResult);
 		assertEquals("success myvalue", player.nextMessage());
 		assertEquals("""
-			{
-			  "type": "root",
-			  "children": {
-			    "commandapitest:test": {
-			      "type": "literal",
-			      "children": {
-			        "value": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    },
-			    "test": {
-			      "type": "literal",
-			      "children": {
-			        "value": {
-			          "type": "argument",
-			          "parser": "brigadier:string",
-			          "properties": {
-			            "type": "word"
-			          },
-			          "executable": true
-			        }
-			      }
-			    }
-			  }
-			}""", getDispatcherString());
+				{
+				  "type": "root",
+				  "children": {
+				    "test": {
+				      "type": "literal",
+				      "children": {
+				        "value": {
+				          "type": "argument",
+				          "parser": "brigadier:string",
+				          "properties": {
+				            "type": "word"
+				          },
+				          "executable": true
+				        }
+				      }
+				    }
+				  }
+				}""", getDispatcherString());
 		
 		// Negative test
 		server.dispatchCommand(player, "test myvalue");
@@ -157,86 +144,12 @@ class ArgumentTests extends TestBase {
 					.then(new LiteralArgument("1").executes(givePosition("221", result)))
 					.then(new LiteralArgument("2").executes(givePosition("222", result)))
 				)
-			).register();
+			).register("minecraft");
 
 		assertEquals("""
 			{
 			  "type": "root",
 			  "children": {
-			    "commandapitest:test": {
-			      "type": "literal",
-			      "children": {
-			        "1": {
-			          "type": "literal",
-			          "children": {
-			            "1": {
-			              "type": "literal",
-			              "children": {
-			                "1": {
-			                  "type": "literal",
-			                  "executable": true
-			                },
-			                "2": {
-			                  "type": "literal",
-			                  "executable": true
-			                }
-			              },
-			              "executable": true
-			            },
-			            "2": {
-			              "type": "literal",
-			              "children": {
-			                "1": {
-			                  "type": "literal",
-			                  "executable": true
-			                },
-			                "2": {
-			                  "type": "literal",
-			                  "executable": true
-			                }
-			              },
-			              "executable": true
-			            }
-			          },
-			          "executable": true
-			        },
-			        "2": {
-			          "type": "literal",
-			          "children": {
-			            "1": {
-			              "type": "literal",
-			              "children": {
-			                "1": {
-			                  "type": "literal",
-			                  "executable": true
-			                },
-			                "2": {
-			                  "type": "literal",
-			                  "executable": true
-			                }
-			              },
-			              "executable": true
-			            },
-			            "2": {
-			              "type": "literal",
-			              "children": {
-			                "1": {
-			                  "type": "literal",
-			                  "executable": true
-			                },
-			                "2": {
-			                  "type": "literal",
-			                  "executable": true
-			                }
-			              },
-			              "executable": true
-			            }
-			          },
-			          "executable": true
-			        }
-			      },
-			      "executable": true
-			    },
 			    "test": {
 			      "type": "literal",
 			      "children": {
