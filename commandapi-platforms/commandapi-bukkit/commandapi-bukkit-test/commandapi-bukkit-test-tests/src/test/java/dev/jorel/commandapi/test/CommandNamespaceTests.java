@@ -523,7 +523,7 @@ public class CommandNamespaceTests extends TestBase {
 			tempPlayer = enableWithNamespaces();
 		}
 
-		CommandAPICommand defaultNamespace = new CommandAPICommand("test")
+		CommandAPICommand minecraftNamespace = new CommandAPICommand("test")
 			.withArguments(LiteralArgument.of("a"))
 			.executesPlayer(info -> {
 				results.set("a");
@@ -535,7 +535,7 @@ public class CommandNamespaceTests extends TestBase {
 				results.set("b");
 			});
 
-		defaultNamespace.register("minecraft");
+		minecraftNamespace.register("minecraft");
 		customNamespace.register("custom");
 
 		if (!enableBeforeRegistering) {
