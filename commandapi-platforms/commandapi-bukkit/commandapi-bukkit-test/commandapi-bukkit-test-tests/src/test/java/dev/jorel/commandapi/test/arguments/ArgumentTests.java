@@ -76,7 +76,7 @@ class ArgumentTests extends TestBase {
 				String value = (String) args.get(0);
 				player.sendMessage("success " + value);
 			})
-			.register();
+			.register("minecraft");
 
 		PlayerMock player = server.addPlayer();
 		boolean commandResult = server.dispatchCommand(player, "test myvalue");
@@ -144,7 +144,7 @@ class ArgumentTests extends TestBase {
 					.then(new LiteralArgument("1").executes(givePosition("221", result)))
 					.then(new LiteralArgument("2").executes(givePosition("222", result)))
 				)
-			).register();
+			).register("minecraft");
 
 		assertEquals("""
 			{

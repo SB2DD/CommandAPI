@@ -23,7 +23,7 @@ public class CommandAPIBukkitConfig extends CommandAPIConfig<CommandAPIBukkitCon
 	 */
 	public CommandAPIBukkitConfig(JavaPlugin plugin) {
 		this.plugin = plugin;
-		super.setNamespace("minecraft");
+		super.setNamespace(plugin.getName().toLowerCase());
 	}
 
 	/**
@@ -71,8 +71,10 @@ public class CommandAPIBukkitConfig extends CommandAPIConfig<CommandAPIBukkitCon
 	}
 
 	/**
+	 * @deprecated The plugin namespace is now the default namespace
 	 * @return this CommandAPIBukkitConfig
 	 */
+	@Deprecated(since = "10.0.0", forRemoval = true)
 	public CommandAPIBukkitConfig usePluginNamespace() {
 		super.setNamespace(plugin.getName().toLowerCase());
 		super.usePluginNamespace = true;
