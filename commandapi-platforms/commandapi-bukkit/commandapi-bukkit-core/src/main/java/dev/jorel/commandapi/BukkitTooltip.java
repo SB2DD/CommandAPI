@@ -21,7 +21,7 @@
 package dev.jorel.commandapi;
 
 import com.mojang.brigadier.Message;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -77,32 +77,32 @@ public class BukkitTooltip<S> extends Tooltip<S> {
 
 	/**
 	 * Constructs a collection of {@link Tooltip <S>} objects from an array of suggestions, and a function which generates a
-	 * tooltip formatted as an adventure {@link Component} for each suggestion
+	 * tooltip formatted as an adventure {@link ComponentLike} for each suggestion
 	 *
 	 * @param <S> the object that the argument suggestions use
-	 * @param tooltipGenerator function which returns a formatted tooltip for the suggestion, an adventure {@link Component}
+	 * @param tooltipGenerator function which returns a formatted tooltip for the suggestion, an adventure {@link ComponentLike}
 	 * @param suggestions array of suggestions to provide to the user
 	 *
 	 * @return a collection of {@link Tooltip <S>} objects from the provided suggestions, with the generated formatted
 	 * 	tooltips
 	 */
 	@SafeVarargs
-	public static <S> Collection<Tooltip<S>> generateAdventureComponents(Function<S, Component> tooltipGenerator, S... suggestions) {
+	public static <S> Collection<Tooltip<S>> generateAdventureComponents(Function<S, ComponentLike> tooltipGenerator, S... suggestions) {
 		return generate(tooltipGenerator, BukkitTooltip::ofAdventureComponent, suggestions);
 	}
 
 	/**
 	 * Constructs a collection of {@link Tooltip <S>} objects from a collection of suggestions, and a function which generates a
-	 * tooltip formatted as an adventure {@link Component} for each suggestion
+	 * tooltip formatted as an adventure {@link ComponentLike} for each suggestion
 	 *
 	 * @param <S> the object that the argument suggestions use
-	 * @param tooltipGenerator function which returns a formatted tooltip for the suggestion, an adventure {@link Component}
+	 * @param tooltipGenerator function which returns a formatted tooltip for the suggestion, an adventure {@link ComponentLike}
 	 * @param suggestions collection of suggestions to provide to the user
 	 *
 	 * @return a collection of {@link Tooltip <S>} objects from the provided suggestions, with the generated formatted
 	 * 	tooltips
 	 */
-	public static <S> Collection<Tooltip<S>> generateAdventureComponents(Function<S, Component> tooltipGenerator, Collection<S> suggestions) {
+	public static <S> Collection<Tooltip<S>> generateAdventureComponents(Function<S, ComponentLike> tooltipGenerator, Collection<S> suggestions) {
 		return generate(tooltipGenerator, BukkitTooltip::ofAdventureComponent, suggestions);
 	}
 
@@ -128,7 +128,7 @@ public class BukkitTooltip<S> extends Tooltip<S> {
 	 *                   suggestion
 	 * @return a <code>BukkitTooltip&lt;S&gt;</code> representing this suggestion and tooltip
 	 */
-	public static <S> Tooltip<S> ofAdventureComponent(S object, Component tooltip) {
+	public static <S> Tooltip<S> ofAdventureComponent(S object, ComponentLike tooltip) {
 		return ofMessage(object, messageFromAdventureComponent(tooltip));
 	}
 
@@ -156,8 +156,8 @@ public class BukkitTooltip<S> extends Tooltip<S> {
 	 * @param component adventure text component
 	 * @return native minecraft message object which can be used natively by brigadier.
 	 */
-	public static Message messageFromAdventureComponent(Component component) {
-		return CommandAPIBukkit.get().generateMessageFromJson(GsonComponentSerializer.gson().serialize(component));
+	public static Message messageFromAdventureComponent(ComponentLike component) {
+		return CommandAPIBukkit.get().generateMessageFromJson(GsonComponentSerializer.gson().serialize(component.asComponent()));
 	}
 
 }
