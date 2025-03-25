@@ -271,7 +271,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
 	}
 
-	@Differs(from = "1.21.1", by = "New advancement argument implementation")
 	@Override
 	public ArgumentType<?> _ArgumentAdvancement() {
 		return ResourceKeyArgument.key(Registries.ADVANCEMENT);
@@ -323,7 +322,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		return ParticleArgument.particle(COMMAND_BUILD_CONTEXT);
 	}
 
-	@Differs(from = "1.21.1", by = "New recipe argument implementation")
 	@Override
 	public ArgumentType<?> _ArgumentRecipe() {
 		return ResourceKeyArgument.key(Registries.RECIPE);
@@ -344,7 +342,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		return new String[] { "1.21.5" };
 	};
 	
-	@Differs(from = "1.20.6", by = "ItemInput constructor uses a data components patch, instead of a data components map")
 	private static String serializeNMSItemStack(ItemStack is) {
 		return new ItemInput(is.getItemHolder(), is.getComponentsPatch()).serialize(COMMAND_BUILD_CONTEXT);
 	}
@@ -355,6 +352,7 @@ public class NMS_1_21_R4 extends NMS_Common {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Differs(from = "1.21.4", by = "particleOptionsTag.getAllKeys() -> particleOptionsTag.keySet()")
 	@Override
 	public final String convert(ParticleData<?> particle) {
 		final ParticleOptions particleOptions = CraftParticle.createParticleParam(particle.particle(), particle.data());
@@ -377,7 +375,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 	 * @param css the command source stack to execute this command
 	 * @return the result of our function. This is either 0 is the command failed, or greater than 0 if the command succeeded
 	 */
-	@Differs(from = "1.21.1", by = "Use Profiler.get() instead of MinecraftServer.getProfiler()")
 	private final int runCommandFunction(CommandFunction<CommandSourceStack> commandFunction, CommandSourceStack css) {
 		// Profile the function. We want to simulate the execution sequence exactly
 		ProfilerFiller profiler = Profiler.get();
@@ -438,7 +435,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		return new CustomHelpTopic(commandName, shortDescription, fullDescription, permission);
 	}
 
-	@Differs(from = "1.21.1", by = "Uses ResourceKeyArgument instead of ResourceLocationArgument")
 	@Override
 	public Advancement getAdvancement(CommandContext<CommandSourceStack> cmdCtx, String key)
 			throws CommandSyntaxException {
@@ -618,7 +614,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		return result.toArray(new FunctionWrapper[0]);
 	}
 
-	@Differs(from = "1.20.6", by = "ResourceLocation constructor change to static ResourceLocation#fromNamespaceAndPath")
 	@Override
 	public SimpleFunctionWrapper getFunction(NamespacedKey key) {
 		final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getKey());
@@ -816,7 +811,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		};
 	}
 
-	@Differs(from = "1.21.1", by = "Uses ResourceKeyArgument instead of ResourceLocationArgument")
 	@Override
 	public final Recipe getRecipe(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		RecipeHolder<?> recipe = ResourceKeyArgument.getRecipe(cmdCtx, key);
@@ -927,7 +921,6 @@ public class NMS_1_21_R4 extends NMS_Common {
 		};
 	}
 
-	@Differs(from = "1.20.6", by = "ResourceLocation constructor change to static ResourceLocation#fromNamespaceAndPath")
 	@Override
 	public final SimpleFunctionWrapper[] getTag(NamespacedKey key) {
 		Collection<CommandFunction<CommandSourceStack>> customFunctions = this.<MinecraftServer>getMinecraftServer().getFunctions().getTag(ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getKey()));
