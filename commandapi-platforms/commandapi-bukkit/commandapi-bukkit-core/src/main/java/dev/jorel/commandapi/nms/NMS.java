@@ -294,7 +294,7 @@ public interface NMS<CommandListenerWrapper> {
 
 	NamedTextColor getAdventureChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	Component getAdventureChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	Component getAdventureChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	float getAngle(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
