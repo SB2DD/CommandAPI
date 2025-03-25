@@ -72,6 +72,7 @@ The list of what version of the CommandAPI you'll need to run on a specific vers
 | **1.21.1**         | 9.5.2 - 9.7.0               | 9.7.0                        | 16                                                        |
 | **1.21.2, 1.21.3** | 9.6.0 - 9.7.0               | 9.7.0                        | 16                                                        |
 | **1.21.4**         | 9.7.0                       | 9.7.0                        | 16                                                        |
+| **1.21.5**         | 10.0.0                      | 10.0.0                       | 16                                                        |
 
 -----
 
@@ -413,8 +414,12 @@ This is the current roadmap for the CommandAPI (as of 30th April 2024):
     <tbody>
         <tr>
             <td valign="top"><b>10.0.0</b></td>
-            <td valign="top">???</td>
+            <td valign="top">March 2025</td>
             <td valign="top">
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 1.21.5</li>
+                </ul>
 				<b>CommandAPI Changes:</b>
                 <ul>
                     <li>https://github.com/CommandAPI/CommandAPI/pull/633 Adds an <code>AsyncOfflinePlayerArgument</code> to allow asynchronous fetching of an offline player</li>
