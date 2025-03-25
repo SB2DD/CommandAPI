@@ -311,7 +311,7 @@ public interface NMS<CommandListenerWrapper> {
 
 	ChatColor getChatColor(CommandContext<CommandListenerWrapper> cmdCtx, String key);
 
-	BaseComponent[] getChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key);
+	BaseComponent[] getChatComponent(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 
 	World getDimension(CommandContext<CommandListenerWrapper> cmdCtx, String key) throws CommandSyntaxException;
 

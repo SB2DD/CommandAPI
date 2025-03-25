@@ -308,7 +308,7 @@ public abstract class ArgumentNMS extends MockPlatform<CommandListenerWrapper> {
 	}
 
 	@Override
-	public BaseComponent[] getChatComponent(CommandContext cmdCtx, String key) {
+	public BaseComponent[] getChatComponent(CommandContext cmdCtx, String key) throws CommandSyntaxException {
 		return baseNMS.getChatComponent(cmdCtx, key);
 	}
 
