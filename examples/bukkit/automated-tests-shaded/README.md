@@ -18,14 +18,14 @@ Key points:
 	<dependency>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-		<version>9.7.1-SNAPSHOT</version>
+		<version>10.0.0</version>
 		<scope>test</scope>
 	</dependency>
 
 	<dependency>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-bukkit-shade</artifactId>
-		<version>9.7.1-SNAPSHOT</version>
+		<version>10.0.0</version>
 		<scope>compile</scope>
 	</dependency>
 
