@@ -43,17 +43,6 @@
 		<module>commandapi-bukkit-1.20.3</module>
 		<module>commandapi-bukkit-1.20.2</module>
 		<module>commandapi-bukkit-1.20</module>
-		<module>commandapi-bukkit-1.19.4</module>
-		<module>commandapi-bukkit-1.19.3</module>
-		<module>commandapi-bukkit-1.19-common</module>
-		<module>commandapi-bukkit-1.19.1</module>
-		<module>commandapi-bukkit-1.19</module>
-		<module>commandapi-bukkit-1.18.2</module>
-		<module>commandapi-bukkit-1.18</module>
-		<module>commandapi-bukkit-1.17-common</module>
-		<module>commandapi-bukkit-1.17</module>
-		<module>commandapi-bukkit-1.17.1</module>
-		<module>commandapi-bukkit-1.16.5</module>
 
 		<!-- The thing you actually include -->
 		<module>commandapi-bukkit-nms-dependency</module>

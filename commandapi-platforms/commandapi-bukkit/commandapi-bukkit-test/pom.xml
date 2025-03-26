@@ -35,11 +35,6 @@
 		<module>commandapi-bukkit-test-impl-1.20.3</module>
 		<module>commandapi-bukkit-test-impl-1.20.2</module>
 		<module>commandapi-bukkit-test-impl-1.20</module>
-		<module>commandapi-bukkit-test-impl-1.19.4</module>
-		<module>commandapi-bukkit-test-impl-1.19.2</module>
-		<module>commandapi-bukkit-test-impl-1.18</module>
-		<module>commandapi-bukkit-test-impl-1.17</module>
-		<module>commandapi-bukkit-test-impl-1.16.5</module>
 
 		<!-- Tests -->
 		<module>commandapi-bukkit-kotlin-test</module>

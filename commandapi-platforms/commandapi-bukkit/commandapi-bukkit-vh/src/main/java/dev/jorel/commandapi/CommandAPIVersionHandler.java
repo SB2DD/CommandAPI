@@ -74,15 +74,6 @@ public abstract class CommandAPIVersionHandler {
 		} else {
 			String version = Bukkit.getBukkitVersion().split("-")[0];
 			CommandAPIPlatform<?, ?, ?> platform = switch (version) {
-				case "1.16.5" -> new NMS_1_16_R3();
-				case "1.17" -> new NMS_1_17();
-				case "1.17.1" -> new NMS_1_17_R1();
-				case "1.18", "1.18.1" -> new NMS_1_18_R1();
-				case "1.18.2" -> new NMS_1_18_R2();
-				case "1.19" -> new NMS_1_19_R1();
-				case "1.19.1", "1.19.2" -> new NMS_1_19_1_R1();
-				case "1.19.3" -> new NMS_1_19_3_R2();
-				case "1.19.4" -> new NMS_1_19_4_R3();
 				case "1.20", "1.20.1" -> new NMS_1_20_R1();
 				case "1.20.2" -> new NMS_1_20_R2();
 				case "1.20.3", "1.20.4" -> new NMS_1_20_R3();
