@@ -377,19 +377,13 @@ The resulting compiled documentation is found in `docs/X.X.X`, where `X.X.X` is 
 
 ## CommandAPI Project Timeline
 
-This is the current roadmap for the CommandAPI (as of 30th April 2024):
+This is the current roadmap for the CommandAPI (as of 26th March 2025):
 
-- **10.0.0:**
+- **Future:**
 
   **Annotation improvements**
 
   The CommandAPI's annotation system has always been a bit limited and was primarily introduced as a proof-of-concept. In this update, the CommandAPI's annotation system will be improved to be (ideally) as powerful as the non-annotation system and have slightly better type safety, support for non-static methods and better checks to prevent invalid command generation. More information about annotations can be found in the [Annotation specification document ](./annotations_spec_doc.md).
-
-- **Future:**
-
-  **Velocity support**
-
-  Velocity support has been greatly anticipated by a large number of developers and we're hoping to bring Velocity support to you at some point in the future!
 
   **Argument conflict detection**
 
