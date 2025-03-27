@@ -28,23 +28,23 @@ public class DefaultBukkitConfig extends DefaultConfig {
 
 	public static final CommentedConfigOption<Boolean> SHOULD_HOOK_PAPER_RELOAD = new CommentedConfigOption<>(
 		new String[] {
-			"Hook into Paper's ServerResourcesReloadedEvent (default: true)",
+			"Hook into Paper's ServerResourcesReloadedEvent (default: false)",
 			"If \"true\", and the CommandAPI detects it is running on a Paper server, it will",
 			"hook into Paper's ServerResourcesReloadedEvent to detect when /minecraft:reload is run.",
 			"This allows the CommandAPI to automatically call its custom datapack-reloading",
 			"function which allows CommandAPI commands to be used in datapacks.",
 			"If you set this to false, CommandAPI commands may not work inside datapacks after",
 			"reloading datapacks."
-		}, true
+		}, false
 	);
 
 	public static final CommentedConfigOption<Boolean> SKIP_RELOAD_DATAPACKS = new CommentedConfigOption<>(
 		new String[] {
-			"Skips the initial datapack reload when the server loads (default: false)",
+			"Skips the initial datapack reload when the server loads (default: true)",
 			"If \"true\", the CommandAPI will not reload datapacks when the server has finished",
 			"loading. Datapacks will still be reloaded if performed manually when \"hook-paper-reload\"",
 			"is set to \"true\" and /minecraft:reload is run."
-		}, false
+		}, true
 	);
 
 	public static final CommentedConfigOption<List<?>> PLUGINS_TO_CONVERT = new CommentedConfigOption<>(
