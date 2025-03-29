@@ -21,15 +21,6 @@
 package dev.jorel.commandapi;
 
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
-import dev.jorel.commandapi.nms.NMS_1_16_R3;
-import dev.jorel.commandapi.nms.NMS_1_17;
-import dev.jorel.commandapi.nms.NMS_1_17_R1;
-import dev.jorel.commandapi.nms.NMS_1_18_R1;
-import dev.jorel.commandapi.nms.NMS_1_18_R2;
-import dev.jorel.commandapi.nms.NMS_1_19_1_R1;
-import dev.jorel.commandapi.nms.NMS_1_19_3_R2;
-import dev.jorel.commandapi.nms.NMS_1_19_4_R3;
-import dev.jorel.commandapi.nms.NMS_1_19_R1;
 import dev.jorel.commandapi.nms.NMS_1_20_R1;
 import dev.jorel.commandapi.nms.NMS_1_20_R2;
 import dev.jorel.commandapi.nms.NMS_1_20_R3;
