@@ -20,21 +20,12 @@
  *******************************************************************************/
 package dev.jorel.commandapi.arguments;
 
-import java.util.Optional;
-
-import dev.jorel.commandapi.executors.CommandArguments;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import dev.jorel.commandapi.CommandAPIBukkit;
-import dev.jorel.commandapi.CommandAPIHandler;
-import dev.jorel.commandapi.commandsenders.BukkitPlayer;
 import dev.jorel.commandapi.exceptions.SpigotNotFoundException;
-import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.wrappers.PreviewableFunction;
+import dev.jorel.commandapi.executors.CommandArguments;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
@@ -44,10 +35,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
  * 
  * @apiNote Returns a {@link BaseComponent}{@code []} object
  */
-public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArgument, Previewable<ChatArgument, BaseComponent[]> {
-
-	private PreviewableFunction<BaseComponent[]> preview;
-	private boolean usePreview;
+public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArgument {
 
 	/**
 	 * Constructs a Chat argument with a given node name. Represents fancy greedy
@@ -77,42 +65,7 @@ public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArg
 
 	@Override
 	public <CommandSourceStack> BaseComponent[] parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		final CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource()).getSource();
-		BaseComponent[] component = CommandAPIBukkit.<CommandSourceStack>get().getChat(cmdCtx, key);
-
-		Optional<PreviewableFunction<BaseComponent[]>> previewOptional = getPreview();
-		if (this.usePreview && previewOptional.isPresent() && sender instanceof Player player) {
-			try {
-				BaseComponent[] previewComponent = previewOptional.get()
-					.generatePreview(new PreviewInfo<>(new BukkitPlayer(player), CommandAPIHandler.getRawArgumentInput(cmdCtx, key), cmdCtx.getInput(), component));
-
-				component = previewComponent;
-			} catch (WrapperCommandSyntaxException e) {
-				throw e.getException();
-			}
-		}
+		final BaseComponent[] component = CommandAPIBukkit.<CommandSourceStack>get().getChat(cmdCtx, key);
 		return component;
-	}
-
-	@Override
-	public ChatArgument withPreview(PreviewableFunction<BaseComponent[]> preview) {
-		this.preview = preview;
-		return this;
-	}
-
-	@Override
-	public Optional<PreviewableFunction<BaseComponent[]>> getPreview() {
-		return Optional.ofNullable(preview);
-	}
-
-	@Override
-	public boolean isLegacy() {
-		return true;
-	}
-
-	@Override
-	public ChatArgument usePreview(boolean usePreview) {
-		this.usePreview = usePreview;
-		return this;
 	}
 }
