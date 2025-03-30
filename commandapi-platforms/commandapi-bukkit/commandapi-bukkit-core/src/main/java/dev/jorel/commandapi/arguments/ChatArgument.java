@@ -65,7 +65,6 @@ public class ChatArgument extends Argument<BaseComponent[]> implements GreedyArg
 
 	@Override
 	public <CommandSourceStack> BaseComponent[] parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		final BaseComponent[] component = CommandAPIBukkit.<CommandSourceStack>get().getChat(cmdCtx, key);
-		return component;
+		return CommandAPIBukkit.<CommandSourceStack>get().getChat(cmdCtx, key);
 	}
 }

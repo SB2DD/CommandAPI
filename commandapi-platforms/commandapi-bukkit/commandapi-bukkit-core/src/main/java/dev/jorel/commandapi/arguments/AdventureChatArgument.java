@@ -65,7 +65,6 @@ public class AdventureChatArgument extends Argument<Component> implements Greedy
 
 	@Override
 	public <CommandSourceStack> Component parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		final Component component = CommandAPIBukkit.<CommandSourceStack>get().getAdventureChat(cmdCtx, key);
-		return component;
+		return CommandAPIBukkit.<CommandSourceStack>get().getAdventureChat(cmdCtx, key);
 	}
 }
