@@ -72,7 +72,7 @@
 		<module>commandapi-annotations</module>
 
 		<!-- Code coverage reports -->
-		<module>commandapi-codecov</module>
+		<!-- <module>commandapi-codecov</module> -->
 	</modules>
 
 	<properties>
