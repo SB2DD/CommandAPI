@@ -72,7 +72,7 @@
 							<version>10.0.0</version>
 						</path>
 					</annotationProcessorPaths>
-					<release>16</release>
+					<release>17</release>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -413,6 +413,7 @@ This is the current roadmap for the CommandAPI (as of 26th March 2025):
                 <b>Minecraft Version Changes:</b>
                 <ul>
                     <li>Adds support for Minecraft 1.21.5</li>
+                    <li>Drops support for Minecraft 1.16.5 - 1.19.4</code>
                 </ul>
 				<b>CommandAPI Changes:</b>
                 <ul>

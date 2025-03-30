@@ -13,8 +13,8 @@
 	<artifactId>commandapi-bukkit-kotlin-test</artifactId>
 
 	<properties>
-		<maven.compiler.source>16</maven.compiler.source>
-		<maven.compiler.target>16</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 		<junit-jupiter.version>5.8.2</junit-jupiter.version>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
@@ -126,7 +126,7 @@
 							<sourceDirs>
 								<sourceDir>${testSourceDirectory}</sourceDir>
 							</sourceDirs>
-							<jvmTarget>16</jvmTarget>
+							<jvmTarget>17</jvmTarget>
 						</configuration>
 					</execution>
 				</executions>
