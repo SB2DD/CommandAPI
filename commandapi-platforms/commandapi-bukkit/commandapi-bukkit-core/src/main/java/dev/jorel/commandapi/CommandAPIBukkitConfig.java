@@ -11,8 +11,8 @@ public class CommandAPIBukkitConfig extends CommandAPIConfig<CommandAPIBukkitCon
 	JavaPlugin plugin;
 
 	// Default configuration
-	boolean shouldHookPaperReload = true;
-	boolean skipReloadDatapacks = false;
+	boolean shouldHookPaperReload = false;
+	boolean skipReloadDatapacks = true;
 
 	/**
 	 * Creates a new CommandAPIBukkitConfig object. Variables in this
