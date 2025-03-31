@@ -10,17 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -68,7 +65,7 @@ import dev.jorel.commandapi.network.BukkitCommandAPIMessenger;
 import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 // CommandAPIBukkit is an CommandAPIPlatform, but also needs all of the methods from
@@ -587,19 +584,8 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	 * @return a {@link WrapperCommandSyntaxException} that wraps Brigadier's
 	 * {@link CommandSyntaxException}
 	 */
-	public static WrapperCommandSyntaxException failWithAdventureComponent(Component message) {
-		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message));
-	}
-
-	/**
-	 * Forces a command to return a success value of 0
-	 *
-	 * @param message Description of the error message, formatted as an adventure chat component
-	 * @return a {@link WrapperCommandSyntaxException} that wraps Brigadier's
-	 * {@link CommandSyntaxException}
-	 */
 	public static WrapperCommandSyntaxException failWithAdventureComponent(ComponentLike message) {
-		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message.asComponent()));
+		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message));
 	}
 	
 	/**
