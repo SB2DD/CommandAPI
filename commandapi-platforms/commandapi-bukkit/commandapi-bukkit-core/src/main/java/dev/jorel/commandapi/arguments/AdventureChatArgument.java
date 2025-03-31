@@ -22,18 +22,11 @@ package dev.jorel.commandapi.arguments;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.jorel.commandapi.CommandAPIHandler;
-import dev.jorel.commandapi.CommandAPIBukkit;
-import dev.jorel.commandapi.commandsenders.BukkitPlayer;
-import dev.jorel.commandapi.exceptions.PaperAdventureNotFoundException;
-import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import dev.jorel.commandapi.executors.CommandArguments;
-import dev.jorel.commandapi.wrappers.PreviewableFunction;
-import net.kyori.adventure.text.Component;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import java.util.Optional;
+import dev.jorel.commandapi.CommandAPIBukkit;
+import dev.jorel.commandapi.exceptions.PaperAdventureNotFoundException;
+import dev.jorel.commandapi.executors.CommandArguments;
+import net.kyori.adventure.text.Component;
 
 /**
  * An argument that represents chat with entity selectors
@@ -42,10 +35,7 @@ import java.util.Optional;
  * 
  * @apiNote Returns a {@link Component} object
  */
-public class AdventureChatArgument extends Argument<Component> implements GreedyArgument, Previewable<AdventureChatArgument, Component> {
-
-	private PreviewableFunction<Component> preview;
-	private boolean usePreview;
+public class AdventureChatArgument extends Argument<Component> implements GreedyArgument {
 
 	/**
 	 * Constructs a Chat argument with a given node name. Represents fancy greedy
@@ -75,43 +65,6 @@ public class AdventureChatArgument extends Argument<Component> implements Greedy
 
 	@Override
 	public <CommandSourceStack> Component parseArgument(CommandContext<CommandSourceStack> cmdCtx, String key, CommandArguments previousArgs) throws CommandSyntaxException {
-		final CommandSender sender = CommandAPIBukkit.<CommandSourceStack>get().getCommandSenderFromCommandSource(cmdCtx.getSource()).getSource();
-		Component component = CommandAPIBukkit.<CommandSourceStack>get().getAdventureChat(cmdCtx, key);
-
-		Optional<PreviewableFunction<Component>> previewOptional = getPreview();
-		if (this.usePreview && previewOptional.isPresent() && sender instanceof Player player) {
-			try {
-				Component previewComponent = previewOptional.get()
-					.generatePreview(new PreviewInfo<>(new BukkitPlayer(player), CommandAPIHandler.getRawArgumentInput(cmdCtx, key), cmdCtx.getInput(), component));
-
-				component = previewComponent;
-			} catch (WrapperCommandSyntaxException e) {
-				throw e.getException();
-			}
-		}
-		
-		return component;
-	}
-
-	@Override
-	public AdventureChatArgument withPreview(PreviewableFunction<Component> preview) {
-		this.preview = preview;
-		return this;
-	}
-
-	@Override
-	public Optional<PreviewableFunction<Component>> getPreview() {
-		return Optional.ofNullable(preview);
-	}
-
-	@Override
-	public boolean isLegacy() {
-		return false;
-	}
-
-	@Override
-	public AdventureChatArgument usePreview(boolean usePreview) {
-		this.usePreview = usePreview;
-		return this;
+		return CommandAPIBukkit.<CommandSourceStack>get().getAdventureChat(cmdCtx, key);
 	}
 }

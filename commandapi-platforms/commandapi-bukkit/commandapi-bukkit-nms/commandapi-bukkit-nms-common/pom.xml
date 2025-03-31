@@ -26,8 +26,8 @@
 	<artifactId>commandapi-bukkit-nms-common</artifactId>
 
 	<properties>
-		<minecraft.mappings>1.19-R0.1-SNAPSHOT</minecraft.mappings>
-		<spigot.version>1.19-R0.1-SNAPSHOT</spigot.version>
+		<minecraft.mappings>1.20.1-R0.1-SNAPSHOT</minecraft.mappings>
+		<spigot.version>1.20.1-R0.1-SNAPSHOT</spigot.version>
 	</properties>
 
 	<repositories>
@@ -159,30 +159,6 @@
 		</profile>
 		<profile>
 			<id>Spigot_1_20_R1</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.20-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>Spigot_1_19_3_R2</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.19.3-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>Spigot_1_19_R1</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -190,43 +166,7 @@
 				<dependency>
 					<groupId>org.spigotmc</groupId>
 					<artifactId>spigot</artifactId>
-					<version>1.19-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>Spigot_1_18_2_R2</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.18.2-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>Spigot_1_18_R1</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.18-R0.1-SNAPSHOT</version>
-					<classifier>remapped-mojang</classifier>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>Spigot_1_17_R1</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot</artifactId>
-					<version>1.17-R0.1-SNAPSHOT</version>
+					<version>1.20-R0.1-SNAPSHOT</version>
 					<classifier>remapped-mojang</classifier>
 					<scope>provided</scope>
 				</dependency>

@@ -19,7 +19,7 @@ dependencies {
 	implementation(kotlin("stdlib-jdk8"))
 
 	// This adds the Spigot API artifact to the build
-	implementation("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
+	implementation("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
 
 	// The CommandAPI dependency used for Bukkit and it's forks
 	implementation("dev.jorel:commandapi-bukkit-core:10.0.0")
