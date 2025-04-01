@@ -112,7 +112,7 @@ class ArgumentLiteralTests extends TestBase {
 		new CommandAPICommand("test")
 			.withArguments(new LiteralArgument("literal"))
 			.executesPlayer(P_EXEC)
-			.register();
+			.register("minecraft");
 
 		assertEquals("""
 			{

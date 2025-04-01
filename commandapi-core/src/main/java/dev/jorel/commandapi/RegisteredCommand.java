@@ -70,6 +70,11 @@ public record RegisteredCommand(
 	 * @return The namespace for this command
 	 */
 	String namespace) {
+
+	public boolean shouldGenerateHelpTopic() {
+		return fullDescription.isPresent() || usageDescription.isPresent() || helpTopic.isPresent();
+	}
+
 	// As https://stackoverflow.com/a/32083420 mentions, Optional's hashCode, equals, and toString method don't work if the
 	//  Optional wraps an array, like `Optional<String[]> usageDescription`, so we have to use the Arrays methods ourselves
 

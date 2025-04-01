@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
 
-class Main : JavaPlugin {
+open class Main : JavaPlugin {
 	override fun onLoad() {
 		dataFolder.mkdirs()
 		CommandAPI.setLogger(CommandAPILogger.fromJavaLogger(logger))

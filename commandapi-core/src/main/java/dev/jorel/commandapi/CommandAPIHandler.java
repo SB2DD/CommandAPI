@@ -20,7 +20,6 @@
  *******************************************************************************/
 package dev.jorel.commandapi;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -57,13 +56,11 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomProvidedArgument;
 import dev.jorel.commandapi.arguments.Literal;
 import dev.jorel.commandapi.arguments.MultiLiteral;
-import dev.jorel.commandapi.arguments.PreviewInfo;
-import dev.jorel.commandapi.arguments.Previewable;
 import dev.jorel.commandapi.commandsenders.AbstractCommandSender;
 import dev.jorel.commandapi.executors.CommandArguments;
 import dev.jorel.commandapi.executors.ExecutionInfo;
+import dev.jorel.commandapi.network.CommandAPIMessenger;
 import dev.jorel.commandapi.preprocessor.RequireField;
-import dev.jorel.commandapi.wrappers.PreviewableFunction;
 
 /**
  * The "brains" behind the CommandAPI.
@@ -122,9 +119,10 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	private static final Map<ClassCache, Field> FIELDS = new HashMap<>();
 
 	final CommandAPIPlatform<Argument, CommandSender, Source> platform;
+	private CommandAPIMessenger<?, ?> messenger;
+
 	final TreeMap<String, CommandPermission> registeredPermissions = new TreeMap<>();
 	final List<RegisteredCommand> registeredCommands; // Keep track of what has been registered for type checking
-	final Map<List<String>, Previewable<?, ?>> previewableArguments; // Arguments with previewable chat
 	static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
 	private static CommandAPIHandler<?, ?, ?> instance;
@@ -132,7 +130,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 	protected CommandAPIHandler(CommandAPIPlatform<Argument, CommandSender, Source> platform) {
 		this.platform = platform;
 		this.registeredCommands = new ArrayList<>();
-		this.previewableArguments = new HashMap<>();
 
 		CommandAPIHandler.instance = this;
 	}
@@ -154,9 +151,13 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 
 	public void onEnable() {
 		platform.onEnable();
+		// Setting up the network messenger usually requires registering
+		//  events, which often does not work until onEnable
+		messenger = platform.setupMessenger();
 	}
 
 	public void onDisable() {
+		messenger.close();
 		platform.onDisable();
 		CommandAPIHandler.resetInstance();
 	}
@@ -544,32 +545,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		return outer;
 	}
 
-	/**
-	 * Handles previewable arguments. This stores the path to previewable arguments
-	 * in {@link CommandAPIHandler#previewableArguments} for runtime resolving
-	 *
-	 * @param commandName the name of the command
-	 * @param args        the declared arguments
-	 * @param aliases     the command's aliases
-	 */
-	private void handlePreviewableArguments(String commandName, Argument[] args, String[] aliases) {
-		if (args.length > 0 && args[args.length - 1] instanceof Previewable<?, ?> previewable) {
-			List<String> path = new ArrayList<>();
-
-			path.add(commandName);
-			for (Argument arg : args) {
-				path.add(arg.getNodeName());
-			}
-			previewableArguments.put(List.copyOf(path), previewable);
-
-			// And aliases
-			for (String alias : aliases) {
-				path.set(0, alias);
-				previewableArguments.put(List.copyOf(path), previewable);
-			}
-		}
-	}
-
 	// Builds a command then registers it
 	void register(CommandMetaData<CommandSender> meta, final Argument[] args,
 			CommandAPIExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> executor, boolean converted, String namespace) {
@@ -621,9 +596,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 		RegisteredCommand registeredCommandInformation = new RegisteredCommand(commandName, argumentsString, List.of(args), shortDescription,
 			fullDescription, usageDescription, helpTopic, aliases, permission, namespace);
 		registeredCommands.add(registeredCommandInformation);
-
-		// Handle previewable arguments
-		handlePreviewableArguments(commandName, args, aliases);
 
 		platform.preCommandRegistration(commandName);
 
@@ -902,43 +874,6 @@ extends AbstractArgument<?, ?, Argument, CommandSender>
 					: theArgument.getIncludedSuggestions();
 			return suggestionsToAddOrOverride.orElse(ArgumentSuggestions.empty()).suggest(suggestionInfo, builder);
 		};
-	}
-
-	/**
-	 * Looks up the function to generate a chat preview for a path of nodes in the
-	 * command tree. This is a method internal to the CommandAPI and isn't expected
-	 * to be used by plugin developers (but you're more than welcome to use it as
-	 * you see fit).
-	 * 
-	 * @param path a list of Strings representing the path (names of command nodes)
-	 *             to (and including) the previewable argument
-	 * @return a function that takes in a {@link PreviewInfo} and returns a
-	 *         {@link Component}. If such a function is not available, this will
-	 *         return a function that always returns null.
-	 */
-	@SuppressWarnings("unchecked")
-	public Optional<PreviewableFunction<?>> lookupPreviewable(List<String> path) {
-		final Previewable<?, ?> previewable = previewableArguments.get(path);
-		if (previewable != null) {
-			return (Optional<PreviewableFunction<?>>) (Optional<?>) previewable.getPreview();
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	/**
-	 * 
-	 * @param path a list of Strings representing the path (names of command nodes)
-	 *             to (and including) the previewable argument
-	 * @return Whether a previewable is legacy (non-Adventure) or not
-	 */
-	public boolean lookupPreviewableLegacyStatus(List<String> path) {
-		final Previewable<?, ?> previewable = previewableArguments.get(path);
-		if (previewable != null && previewable.getPreview().isPresent()) {
-			return previewable.isLegacy();
-		} else {
-			return true;
-		}
 	}
 
 	/////////////////////////

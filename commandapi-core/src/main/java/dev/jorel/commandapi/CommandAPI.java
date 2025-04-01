@@ -223,6 +223,17 @@ public class CommandAPI {
 	}
 
 	/**
+	 * Logs an exception from the CommandAPI. This always gets logged, even if silent
+	 * logs are enabled.
+	 *
+	 * @param message the message to log as an error
+	 * @param throwable the exception that was thrown before calling this method
+	 */
+	public static void logException(String message, Throwable throwable) {
+		getLogger().severe(message, throwable);
+	}
+
+	/**
 	 * Reloads all the datapacks that are on the server. This should be used if
 	 * you change a datapack and want to reload a server. Execute this method after
 	 * running /minecraft:reload, NOT before.

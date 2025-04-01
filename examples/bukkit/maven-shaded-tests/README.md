@@ -4,7 +4,7 @@ An example showcasing using MockBukkit and the CommandAPI testing suite to test 
 
 > **Dev note:**
 >
-> Testing using the CommandAPI is still in its early stage and is only set up for Minecraft 1.19.2, so the following is subject to change!
+> Testing using the CommandAPI is still in its early stage and is only set up for Minecraft 1.20, so the following is subject to change!
 
 -----
 
@@ -19,14 +19,14 @@ In your `pom.xml`, you need the following:
   - `commandapi-bukkit-test-tests` (rewrites CommandAPIVersionHandler to hook into testing NMS implementations)
   - `commandapi-bukkit-shade` (as normal for shading)
   - `commandapi-bukkit-test-impl` (Test implementation with utility methods and initial test setups for version-specific implementations)
-  - `commandapi-bukkit-test-impl-1.19.2` (Test implementation for Minecraft 1.19.2)
+  - `commandapi-bukkit-test-impl-1.20` (Test implementation for Minecraft 1.20)
 - A full copy of Spigot (not using Mojang mappings)
 
 For testing, you'll need:
 
 - JUnit (e.g. JUnit 5)
 
-> ⚠️ You do _not_ need `MockBukkit`, this is automatically included when you include `commandapi-bukkit-test-impl-1.19.2`.
+> ⚠️ You do _not_ need `MockBukkit`, this is automatically included when you include `commandapi-bukkit-test-impl-1.20`.
 
 For building and setup, you'll need:
 

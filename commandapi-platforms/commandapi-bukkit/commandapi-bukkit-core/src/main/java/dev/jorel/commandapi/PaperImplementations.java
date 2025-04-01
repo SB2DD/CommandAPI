@@ -1,10 +1,11 @@
 package dev.jorel.commandapi;
 
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.nms.NMS;
 import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ public class PaperImplementations {
 
 	private final boolean isPaperPresent;
 	private final boolean isFoliaPresent;
+	private final boolean isPaperBrigAPI;
 	private final NMS<?> nmsInstance;
 	private final Class<? extends CommandSender> feedbackForwardingCommandSender;
 	private final Class<? extends CommandSender> nullCommandSender;
@@ -54,6 +56,15 @@ public class PaperImplementations {
 		}
 
 		this.nullCommandSender = tempNullCommandSender;
+
+		boolean paperCommandSourceStackPresent;
+		try {
+			Class.forName("io.papermc.paper.command.brigadier.CommandSourceStack");
+			paperCommandSourceStackPresent = true;
+		} catch (ClassNotFoundException e) {
+			paperCommandSourceStackPresent = false;
+		}
+		this.isPaperBrigAPI = paperCommandSourceStackPresent;
 	}
 
 	/**
@@ -110,6 +121,13 @@ public class PaperImplementations {
 	public boolean isPaperPresent() {
 		return this.isPaperPresent;
 	}
+
+	/**
+	 * @return whether we're running a Paper server with the Paper Brigadier command API
+	 */
+	public boolean isPaperBrigAPI() {
+		return this.isPaperBrigAPI;
+	}
 	
 	/**
 	 * @return whether we're using folia or not
@@ -139,17 +157,21 @@ public class PaperImplementations {
 	 * @return A {@link WrapperCommandSyntaxException} with the given message as error message
 	 */
 	public WrapperCommandSyntaxException getExceptionFromString(String message) {
+		Message brigadierMessage;
 		if (isPaperPresent) {
-			// I don't know why, but if you set this to an Object first, then cast it to a Component,
-			// running this code is totally fine on a Spigot server. If you don't do this (e.g. set
-			// it to a Component or inline this), for some reason Java throws a stronk at runtime.
-			// For your sanity and the sanity of whoever has to maintain this in the future, please
-			// DO NOT try to simplify this statement:
-			final Object adventureComponent = LegacyComponentSerializer.legacySection().deserialize(message);
-			return new WrapperCommandSyntaxException(new SimpleCommandExceptionType(BukkitTooltip.messageFromAdventureComponent((Component) adventureComponent)).create());
+			// Java is doing something weird here.
+			//  It's like when the class loads, it makes sure all the function calls use the right classes,
+			//  but it doesn't check casts until the code runs. When it checks if classes are compatible,
+			//  it doesn't need to load the class if they are exactly the same, but to check inheritance
+			//  it does actually need to load the classes. But I don't know ¯\_(ツ)_/¯.
+			// Whatever Java thinks it is doing, this code loads on Spigot, while
+			//  more obvious things cause `ClassNotFound: ComponentLike`.
+			brigadierMessage = BukkitTooltip.messageFromAdventureComponent(
+				(ComponentLike) (Object) LegacyComponentSerializer.legacySection().deserialize(message)
+			);
 		} else {
-			return new WrapperCommandSyntaxException(new SimpleCommandExceptionType(BukkitTooltip.messageFromBaseComponents(TextComponent.fromLegacyText(message))).create());
+			brigadierMessage = BukkitTooltip.messageFromBaseComponents(TextComponent.fromLegacyText(message));
 		}
-	}	
-
+		return new WrapperCommandSyntaxException(new SimpleCommandExceptionType(brigadierMessage).create());
+	}
 }

@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -62,6 +65,7 @@ import org.bukkit.craftbukkit.v1_21_R3.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R3.CraftParticle;
 import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R3.CraftSound;
+import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R3.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_21_R3.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R3.command.VanillaCommandWrapper;
@@ -217,6 +221,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 	private static final Field entitySelectorUsesSelector;
 	// private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
+	private static final MethodHandle minecraftServerSetSelected;
 	private static final boolean vanillaCommandDispatcherFieldExists;
 	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
 
@@ -239,6 +244,16 @@ public class NMS_1_21_R3 extends NMS_Common {
 		// itemInput = SafeVarHandle.ofOrNull(ItemInput.class, "c", "tag", CompoundTag.class);
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "h", "dispatcher");
+
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		MethodHandle setSelected;
+		try {
+			setSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			// We're on Spigot or Paper 1.21.4 build 62 or earlier
+			setSelected = null;
+		}
+		minecraftServerSetSelected = setSelected;
 
 		boolean fieldExists;
 		try {
@@ -824,8 +839,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx,
-			boolean isNative) {
+	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative) {
 		CommandSourceStack css = cmdCtx.getSource();
 
 		CommandSender sender = css.getBukkitSender();
@@ -837,10 +851,6 @@ public class NMS_1_21_R3 extends NMS_Common {
 			// sender.
 			sender = Bukkit.getConsoleSender();
 		}
-		Vec3 pos = css.getPosition();
-		Vec2 rot = css.getRotation();
-		World world = getWorldForCSS(css);
-		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 
 		Entity proxyEntity = css.getEntity();
 		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
@@ -849,10 +859,40 @@ public class NMS_1_21_R3 extends NMS_Common {
 				proxy = sender;
 			}
 
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
+			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_21_R3(css, sender, proxy));
 		} else {
 			return wrapCommandSender(sender);
 		}
+	}
+
+	@Override
+	public NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world) {
+		if (callee == null) callee = caller;
+
+		// Most parameters default to what is defined by the caller
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+
+		// Position and rotation may be overridden by the Location
+		if (location != null) {
+			css = css
+				.withPosition(new Vec3(location.getX(), location.getY(), location.getZ()))
+				.withRotation(new Vec2(location.getPitch(), location.getYaw()));
+		}
+
+		// ServerLevel may be overridden by the World
+		if (world == null && location != null) {
+			world = location.getWorld();
+		}
+		if (world != null) {
+			css = css.withLevel(((CraftWorld) world).getHandle());
+		}
+
+		// The proxied sender can only be an Entity in the CommandSourceStack
+		if (callee instanceof org.bukkit.entity.Entity e) {
+			css = css.withEntity(((CraftEntity) e).getHandle());
+		}
+
+		return new NativeProxyCommandSender_1_21_R3(css, caller, callee);
 	}
 
 	@Override
@@ -902,6 +942,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 		};
 		case BIOMES -> _ArgumentSyntheticBiome()::listSuggestions;
 		case ENTITIES -> net.minecraft.commands.synchronization.SuggestionProviders.SUMMONABLE_ENTITIES;
+		case POTION_EFFECTS -> (context, builder) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.MOB_EFFECT.keySet(), builder);
 		default -> (context, builder) -> Suggestions.empty();
 		};
 	}
@@ -984,6 +1025,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 				}
 			}
 			return packResources;
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to collect resource packs!", exception);
+			// Return all currently selected packs
+			return this.<MinecraftServer>getMinecraftServer().getPackRepository().openAllSelected();
 		});
 
 		// Step 2: Convert all of the resource packs into ReloadableResources which
@@ -1004,6 +1049,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 					LogUtils.getLogger().isDebugEnabled()).done();
 
 			return simpleReloadInstance.thenApply(x -> serverResources);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to convert resource packs into ReloadableResources", exception);
+			// Return existing resources
+			return this.<MinecraftServer>getMinecraftServer().resources;
 		});
 
 		// Step 3: Actually load all of the resources
@@ -1011,7 +1060,15 @@ public class NMS_1_21_R3 extends NMS_Common {
 			this.<MinecraftServer>getMinecraftServer().resources.close();
 			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
 			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			if (minecraftServerSetSelected == null) {
+				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			} else {
+				try {
+					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);
+				} catch (Throwable e) {
+					CommandAPI.logException("Something went wrong while trying to invoke PackRepository#setSelected(Collection, boolean)", e);
+				}
+			}
 			
 			final FeatureFlagSet enabledFeatures = this.<MinecraftServer>getMinecraftServer().getWorldData().getDataConfiguration().enabledFeatures();
 
@@ -1045,6 +1102,9 @@ public class NMS_1_21_R3 extends NMS_Common {
 						enabledFeatures
 				)
 			);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to load resources.", exception);
+			return null;
 		});
 
 		// Step 4: Block the thread until everything's done
@@ -1120,6 +1180,12 @@ public class NMS_1_21_R3 extends NMS_Common {
 			}
 			return new PaperCommandRegistration<>(
 				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
+				() -> {
+					SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
+					helpMap.clear();
+					helpMap.initializeGeneralTopics();
+					helpMap.initializeCommands();
+				},
 				node -> bukkitCommandNode_bukkitBrigCommand.isInstance(node.getCommand())
 			);
 		}

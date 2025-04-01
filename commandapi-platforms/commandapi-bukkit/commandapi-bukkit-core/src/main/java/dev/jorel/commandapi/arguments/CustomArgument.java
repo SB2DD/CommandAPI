@@ -34,7 +34,7 @@ import dev.jorel.commandapi.BukkitTooltip;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPIHandler;
 import dev.jorel.commandapi.executors.CommandArguments;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
@@ -221,49 +221,13 @@ public class CustomArgument<T, B> extends Argument<T> {
 	public static class CustomArgumentException extends Exception {
 
 		private BaseComponent[] errorBaseComponent = null;
-		private Component errorComponent = null;
+		private ComponentLike errorComponent = null;
 		private String errorMessage = null;
 		private MessageBuilder errorMessageBuilder = null;
 		
 		/* Prevent instantiation from any other sources */
 		private CustomArgumentException() {
 			
-		}
-
-		/**
-		 * Constructs a CustomArgumentException with a given error message
-		 * 
-		 * @param errorMessage the error message to display to the user when this
-		 *                     exception is thrown
-		 * @deprecated Use {@link CustomArgumentException#fromBaseComponents(BaseComponent...)} instead
-		 */
-		@Deprecated(since = "9.0.1", forRemoval = true)
-		public CustomArgumentException(BaseComponent[] errorMessage) {
-			this.errorBaseComponent = errorMessage;
-		}
-
-		/**
-		 * Constructs a CustomArgumentException with a given error message
-		 * 
-		 * @param errorMessage the error message to display to the user when this
-		 *                     exception is thrown
-		 * @deprecated Use {@link CustomArgumentException#fromString(String)} instead
-		 */
-		@Deprecated(since = "9.0.1", forRemoval = true)
-		public CustomArgumentException(String errorMessage) {
-			this.errorMessage = errorMessage;
-		}
-
-		/**
-		 * Constructs a CustomArgumentException with a given error message
-		 * 
-		 * @param errorMessage the error message to display to the user when this
-		 *                     exception is thrown
-		 * @deprecated Use {@link CustomArgumentException#fromMessageBuilder(MessageBuilder)} instead
-		 */
-		@Deprecated(since = "9.0.1", forRemoval = true)
-		public CustomArgumentException(MessageBuilder errorMessage) {
-			this.errorMessageBuilder = errorMessage;
 		}
 
 		/**
@@ -289,14 +253,13 @@ public class CustomArgument<T, B> extends Argument<T> {
 			exception.errorMessage = errorMessage;
 			return exception;
 		}
-
 		/**
 		 * Constructs a CustomArgumentException with a given error message
 		 * 
 		 * @param errorMessage the error message to display to the user when this
 		 *                     exception is thrown
 		 */
-		public static CustomArgumentException fromAdventureComponent(Component errorMessage) {
+		public static CustomArgumentException fromAdventureComponent(ComponentLike errorMessage) {
 			CustomArgumentException exception = new CustomArgumentException();
 			exception.errorComponent = errorMessage;
 			return exception;

@@ -1,5 +1,6 @@
 package dev.jorel.commandapi;
 
+import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 
@@ -17,7 +18,8 @@ public class CommandAPIVelocityConfig extends CommandAPIConfig<CommandAPIVelocit
 	 * constructor are required to load the CommandAPI on Velocity properly.
 	 *
 	 * @param server The {@link ProxyServer} that the CommandAPI is running on.
-	 * @param plugin The plugin that is loading the CommandAPI.
+	 * @param plugin The plugin object (annotated by {@link Plugin}) loading the CommandAPI.
+	 *               This is used when registering events.
 	 */
 	public CommandAPIVelocityConfig(ProxyServer server, Object plugin) {
 		this.server = server;

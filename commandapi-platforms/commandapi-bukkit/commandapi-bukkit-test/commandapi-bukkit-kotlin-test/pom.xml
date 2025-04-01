@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>commandapi-bukkit-test</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>9.7.0</version>
+		<version>10.0.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -13,8 +13,8 @@
 	<artifactId>commandapi-bukkit-kotlin-test</artifactId>
 
 	<properties>
-		<maven.compiler.source>16</maven.compiler.source>
-		<maven.compiler.target>16</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 		<junit-jupiter.version>5.8.2</junit-jupiter.version>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
@@ -53,9 +53,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<!-- Inherit 1.19.2 implemented MockNMS -->
+			<!-- Inherit 1.20 implemented MockNMS -->
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-test-impl-1.19.2</artifactId>
+			<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -94,18 +94,18 @@
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>1.19.2-R0.1-SNAPSHOT</version>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.seeseemelk</groupId>
-			<artifactId>MockBukkit-v1.19</artifactId>
-			<version>2.29.0</version>
+			<artifactId>MockBukkit-v1.20</artifactId>
+			<version>3.9.0</version>
 		</dependency>
 		<dependency>
 			<!-- We need all of NMS present for testing! -->
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.19.2-R0.1-SNAPSHOT</version>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -126,7 +126,7 @@
 							<sourceDirs>
 								<sourceDir>${testSourceDirectory}</sourceDir>
 							</sourceDirs>
-							<jvmTarget>16</jvmTarget>
+							<jvmTarget>17</jvmTarget>
 						</configuration>
 					</execution>
 				</executions>

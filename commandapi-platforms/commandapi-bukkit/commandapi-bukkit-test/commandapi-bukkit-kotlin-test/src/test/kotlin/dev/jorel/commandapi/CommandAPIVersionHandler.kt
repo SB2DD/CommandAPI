@@ -1,6 +1,6 @@
 package dev.jorel.commandapi;
 
-import dev.jorel.commandapi.nms.NMS_1_19_1_R1;
+import dev.jorel.commandapi.nms.NMS_1_20_R1;
 import dev.jorel.commandapi.test.MockNMS;
 
 /**
@@ -14,7 +14,7 @@ abstract class CommandAPIVersionHandler {
 
 		@JvmStatic
 		fun getPlatform() : LoadContext {
-			return LoadContext(MockNMS(NMS_1_19_1_R1()))
+			return LoadContext(MockNMS(NMS_1_20_R1()))
 		}
 
 	}

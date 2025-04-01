@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>commandapi-bukkit-test</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>9.7.0</version>
+		<version>10.0.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -111,8 +111,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.seeseemelk</groupId>
-			<artifactId>MockBukkit-v1.19</artifactId>
-			<version>2.29.0</version>
+			<artifactId>MockBukkit-v1.20</artifactId>
+			<version>3.9.0</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>io.papermc.paper</groupId>
