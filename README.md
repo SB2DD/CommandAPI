@@ -413,13 +413,14 @@ This is the current roadmap for the CommandAPI (as of 26th March 2025):
                 <b>Minecraft Version Changes:</b>
                 <ul>
                     <li>Adds support for Minecraft 1.21.5</li>
-                    <li>Drops support for Minecraft 1.16.5 - 1.19.4</code>
+                    <li>Drops support for Minecraft 1.16.5 - 1.19.4</li>
                 </ul>
 				<b>CommandAPI Changes:</b>
                 <ul>
                     <li>https://github.com/CommandAPI/CommandAPI/pull/633 Adds an <code>AsyncOfflinePlayerArgument</code> to allow asynchronous fetching of an offline player</li>
                     <li>https://github.com/CommandAPI/CommandAPI/pull/636 The default namespace has been updated from <code>minecraft</code> to the plugin's name. If you are not shading, the default namespace is going to be <code>commandapi</code>. If you are shading, the default namespace is going to be your plugin's name.</li>
                     <li>Updates the config defaults for the datapack reloading step to be opt-in instead of opt-out.</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/634 Updates methods that previously accepted <code>Component</code> to now accept <code>ComponentLike</code> instead.</li>
                 </ul>
                 <b>Bug Fixes:</b>
                 <ul>
