@@ -33,7 +33,7 @@
 **Downloads & Documentation:**
 
 - <img width="20px" src="https://icon-icons.com/icons2/2348/PNG/512/download_arrow_icon_143023.png"></img> [All downloads](https://github.com/CommandAPI/CommandAPI/releases)
-- <img width="20px" src="https://icon-icons.com/icons2/2348/PNG/512/books_icon_143050.png"></img> [Documentation (includes usage for server owners!)](https://commandapi.jorel.dev/latest.html)
+- <img width="20px" src="https://icon-icons.com/icons2/2348/PNG/512/books_icon_143050.png"></img> [Documentation (includes usage for server owners!)](https://docs.commandapi.dev/)
 
 **Other**
 
@@ -115,7 +115,7 @@ Still not convinced? In addition to all of the above, the CommandAPI also provid
 - **Safe suggestion generation** - The CommandAPI offers compile-time type safety for specific arguments
 - **Precise permission support** - Apply permissions to specific arguments - you need perms to even _see_ the argument
 - **Fast updates** - Consistently supports new Minecraft versions within a week of their release
-- [**Insanely detailed documentation**](https://commandapi.jorel.dev/latest.html) - Trust me, you've never seen a plugin documentation look so good.
+- [**Insanely detailed documentation**](https://docs.commandapi.dev/) - Trust me, you've never seen a plugin documentation look so good.
 
 -----
 
@@ -334,62 +334,47 @@ The CommandAPI is built using the Maven build tool - if you don't have it, you c
   git clone https://github.com/CommandAPI/CommandAPI.git
   ```
 
-- Run `mvn clean install -P Platform.Bukkit`
+- Run `mvn clean install -P Platform.Bukkit,Platform.Velocity`
 
-The resulting plugin `.jar` is found in `commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI-X.X.X_DATE.jar`
+Notable artifacts can be found here:
 
-## Building the CommandAPI's documentation
+- Spigot-mapped Spigot/Paper plugin `.jar`:
 
-The CommandAPI's documentation is built using a custom version of [mdBook](https://rust-lang.github.io/mdBook/), a command line tool to create "books" with Markdown. This custom version can be found [in my mdBook fork](https://github.com/JorelAli/mdBook/releases).
+  ```sh
+  commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI-X.X.X_DATE.jar
+  ```
 
-- (Optional): Build the CommandAPI first, using the instructions above. The documentation pulls information directly from tests in the source code, so it assumes that those tests compile correctly!
+- Mojang-mapped Spigot/Paper plugin `.jar`:
 
-- Get a copy of mdbook fork executable.
-  - On Windows, download `mdbook-fa5.exe` from the [mdBook FA5 support](https://github.com/JorelAli/mdBook/releases/tag/v0.4.9) release
-  - On Linux:
-    - Clone my [mdBook fork](https://github.com/JorelAli/mdBook) using your preferred method, or with the command below:
+  ```sh
+  commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin-mojang-mapped/target/CommandAPI-X.X.X_DATE.jar
+  ```
 
-      ```bash
-      git clone https://github.com/JorelAli/mdBook.git
-      ```
+- Velocity Plugin `.jar`:
 
-    - Use git to checkout to the `fa5` branch, using the following command:
-
-      ```bash
-      git checkout fa5
-      ```
-
-    - Build the executable with `cargo` (can be installed using `sudo apt-get install cargo` on Ubuntu distros), using the following command:
-
-      ```bash
-      cargo build
-      ```
-
-    - Grab the executable `mdbook` from `mdBook/target/debug/`
-
-- Navigate to the `docssrc` folder
-
-- Run `mdbook-fa5.exe build` (or `mdbook build` on Linux)
-
-The resulting compiled documentation is found in `docs/X.X.X`, where `X.X.X` is specified in the `book.toml` file's `build-dir` in the `docssrc` folder.
+  ```sh
+  commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/CommandAPI-X.X.X_DATE.jar
+  ```
 
 -----
 
 ## CommandAPI Project Timeline
 
-This is the current roadmap for the CommandAPI (as of 26th March 2025):
+This is the current roadmap for the CommandAPI (as of 1st April 2025):
 
-- **Future:**
+- **Hard Paper fork support**
 
-  **Annotation improvements**
+  Paper's moving up in the world and it's about time the CommandAPI got with the times. We've got an active PR https://github.com/CommandAPI/CommandAPI/pull/517 that will have better support for Paper. In future, we'll only release Paper builds on Hangar and Spigot builds on SpigotMC. Modrinth will support both releases.
 
-  The CommandAPI's annotation system has always been a bit limited and was primarily introduced as a proof-of-concept. In this update, the CommandAPI's annotation system will be improved to be (ideally) as powerful as the non-annotation system and have slightly better type safety, support for non-static methods and better checks to prevent invalid command generation. More information about annotations can be found in the [Annotation specification document ](./annotations_spec_doc.md).
+- **Annotation improvements**
 
-  **Argument conflict detection**
+  The CommandAPI's annotation system has always been a bit limited and was primarily introduced as a proof-of-concept. In this update, the CommandAPI's annotation system will be improved to be (ideally) as powerful as the non-annotation system and have slightly better type safety, support for non-static methods and better checks to prevent invalid command generation. More information about annotations can be found in the [Annotation specification document](./annotations_spec_doc.md).
+
+- **Argument conflict detection**
 
   The CommandAPI simply uses the Brigadier system under the hood. This system is prone to _argument conflicts_, which is where certain arguments are given priority over other arguments. (For example "hello" and "123" are both valid string arguments, but if you have a command that has a string argument or an integer argument, Brigadier may ignore the integer argument). In this update, the CommandAPI will try to spot potential conflicts and add a warning in the console.
 
-  **'True' custom arguments and server-side argument implementations**
+- **'True' custom arguments and server-side argument implementations**
 
   Through some brief testing of the [regex-mod branch](https://github.com/CommandAPI/CommandAPI/tree/dev/regex-mod) and my [MinecraftRegexArgumentMod](https://github.com/JorelAli/MinecraftRegexArgumentMod) repository, it was discovered that 'true' custom arguments (arguments with a custom implementation of the returned type and parser) are possible with the aid of a client-sided mod. Additionally, this functionality also works _without_ a client-sided mod, assuming this is only used server-side. This can be useful for server-only datapacks, functions and tags, as well as command blocks. It is possible that this may lead into being ported to Fabric, but there are no concrete plans to do so as of now.
 
@@ -408,12 +393,17 @@ This is the current roadmap for the CommandAPI (as of 26th March 2025):
     <tbody>
         <tr>
             <td valign="top"><b>10.0.0</b></td>
-            <td valign="top">March 2025</td>
+            <td valign="top">April 2025</td>
             <td valign="top">
+				<b>⚠️ This version is incompatible with any plugin that used the CommandAPI version 9.X.X or below! (See documentation for more information)</b><br>
                 <b>Minecraft Version Changes:</b>
                 <ul>
                     <li>Adds support for Minecraft 1.21.5</li>
                     <li>Drops support for Minecraft 1.16.5 - 1.19.4</li>
+                </ul>
+				<b>Java Version Changes:</b>
+				<ul>
+                    <li>Change from requiring Java 16 to Java 17 (LTS)</li>
                 </ul>
 				<b>CommandAPI Changes:</b>
                 <ul>
@@ -424,10 +414,17 @@ This is the current roadmap for the CommandAPI (as of 26th March 2025):
                 </ul>
                 <b>Bug Fixes:</b>
                 <ul>
-                    <li>https://github.com/JorelAli/CommandAPI/issues/477 Fixed <code>NativeProxyCommandSender</code> not being able to run Vanilla (and CommandAPI) commands</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/477 Fixed <code>NativeProxyCommandSender</code> not being able to run Vanilla (and CommandAPI) commands</li>
                     <li>https://github.com/CommandAPI/CommandAPI/issues/578, https://github.com/CommandAPI/CommandAPI/issues/583, https://github.com/CommandAPI/CommandAPI/pull/629 Fixes <code>Bukkit#dispatchCommand()</code> not working after Paper's Brigadier API changes</li>
                     <li>Fixes <code>PotionEffectArgument.NamespacedKey</code> not having suggestions in some versions</li>
                 </ul>
+				<b>Website Changes:</b>
+				<ul>
+                    <li>The CommandAPI has a new website: https://commandapi.dev/</li>
+					<li>The CommandAPI has moved from https://github.com/JorelAli/CommandAPI to https://github.com/CommandAPI/CommandAPI</li>
+                    <li>The CommandAPI's documentation source code is now over at https://github.com/CommandAPI/docs</li>
+                    <li>The CommandAPI's JavaDocs can be viewed over at https://javadocs.commandapi.dev</li>
+				</ul>
             </td>
         </tr>
         <tr>
