@@ -28,11 +28,14 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>normal</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+							<createSourcesJar>true</createSourcesJar>
 							<!-- Remove commandapi-core's VersionHandler in favour of ours which
 								loads CommandAPIVelocity -->
 							<filters>
