@@ -135,8 +135,14 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
-		// Remove nodes from the  dispatcher
+		// Remove nodes from the Paper dispatcher
 		removeBrigadierCommands(getPaperDispatcher().getRoot(), commandName, unregisterNamespaces,
+			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
+			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
+			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
+
+		// Remove nodes from the Minecraft dispatcher
+		removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, unregisterNamespaces,
 			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
 			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
