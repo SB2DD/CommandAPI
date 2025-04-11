@@ -11,6 +11,7 @@ import org.bukkit.help.HelpTopic;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,12 +34,15 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private final RootCommandNode<Source> registeredNodes = new RootCommandNode<>();
 
 	private static final Object paperCommandsInstance;
+	private static final Class<?> apiMirrorRootNode;
+	private static final Method apiMirrorRootNodeGetDispatcher;
 	private static final Field dispatcherField;
 
 	private static final Constructor<?> pluginCommandNodeConstructor;
 	private static final SafeVarHandle<CommandNode<?>, Object> metaField;
 
 	static {
+		// Deal with retrieving the dispatcher in the PaperCommands class
 		Object paperCommandsInstanceObject = null;
 		Field dispatcherFieldObject = null;
 
@@ -54,6 +58,19 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		dispatcherField = dispatcherFieldObject;
 		dispatcherField.setAccessible(true);
 
+		// Make sure to get Minecraft's dispatcher's root node from Paper's dispatcher which we can access from Paper's dispatcher's root node's getDispatcher method
+		Class<?> apiMirrorRootNodeClass = null;
+		Method apiMirrorRootNodeGetDispatcherMethod = null;
+		try {
+			apiMirrorRootNodeClass = Class.forName("io.papermc.paper.command.brigadier.ApiMirrorRootNode");
+			apiMirrorRootNodeGetDispatcherMethod = apiMirrorRootNodeClass.getDeclaredMethod("getDispatcher");
+		} catch (ReflectiveOperationException e) {
+			// Doesn't happen
+		}
+		apiMirrorRootNode = apiMirrorRootNodeClass;
+		apiMirrorRootNodeGetDispatcher = apiMirrorRootNodeGetDispatcherMethod;
+
+		// Deal with retrieving a constructor to mark a command as a plugin command
 		Constructor<?> commandNode;
 		SafeVarHandle<CommandNode<?>, ?> metaFieldHandle = null;
 		try {
@@ -100,6 +117,20 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public RootCommandNode<Source> getPaperDispatcherRoot() {
+		try {
+			CommandDispatcher<Source> paperDispatcher = getPaperDispatcher();
+			RootCommandNode<Source> paperDispatcherRootNode = paperDispatcher.getRoot();
+			Object apiMirrorNode = apiMirrorRootNode.cast(paperDispatcherRootNode);
+			CommandDispatcher<Source> minecraftDispatcher = (CommandDispatcher<Source>) apiMirrorRootNodeGetDispatcher.invoke(apiMirrorNode);
+			return minecraftDispatcher.getRoot();
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			// This doesn't happen
+			return null;
+		}
+	}
+
 	// Implement CommandRegistrationStrategy methods
 	@Override
 	public CommandDispatcher<Source> getBrigadierDispatcher() {
@@ -135,14 +166,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
-		// Remove nodes from the Paper dispatcher
-		removeBrigadierCommands(getPaperDispatcher().getRoot(), commandName, unregisterNamespaces,
-			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
-			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
-			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
-
-		// Remove nodes from the Minecraft dispatcher
-		removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, unregisterNamespaces,
+		// Remove nodes from the dispatcher
+		removeBrigadierCommands(getPaperDispatcherRoot(), commandName, unregisterNamespaces,
 			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
 			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
