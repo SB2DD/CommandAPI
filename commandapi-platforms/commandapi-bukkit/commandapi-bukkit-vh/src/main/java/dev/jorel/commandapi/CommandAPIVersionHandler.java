@@ -36,7 +36,7 @@ import org.bukkit.Bukkit;
  * file within the commandapi-core module is NOT used at compile time. Instead,
  * the commandapi-vh module is loaded instead, which doesn't use reflection to
  * load NMS instances.
- * 
+ * <p>
  * NMS classes implement {@code NMS<CommandListenerWrapper>}. The type
  * CommandListenerWrapper isn't visible as in this Maven module (it's not
  * included and in some cases, cannot be included because Maven will only select
@@ -91,16 +91,14 @@ public abstract class CommandAPIVersionHandler {
 				}
 				throw new UnsupportedVersionException(version);
 			}
-		} catch(NoClassDefFoundError error) {
-			// Something went sideways when trying to load a platform. This probably means we're using a Mojang-mapped
-			// plugin, but accidentally shaded in a Spigot-mapped version of the CommandAPI. Because this is an error
-			// we'll just rethrow this (instead of piping it into logError), but include some helpful(?) logging that
-			// might point users in the right direction
-			CommandAPI.logError("The CommandAPI's NMS hook failed to load! This version of the CommandAPI is " +
-				(MojangMappedVersionHandler.isMojangMapped() ? "Mojang" : "spigot") + "-mapped. Have you checked that " +
-				"you are using a CommandAPI version that matches the mappings that your plugin is using?");
-			throw error;
+		} catch (Throwable error) {
+			// Something went sideways when trying to load a platform. This probably means we're shading the wrong mappings.
+			// Because this is an error we'll just rethrow this (instead of piping it into logError, which we can't really
+			// do anyway since the CommandAPILogger isn't loaded), but include some helpful(?) logging that might point
+			// users in the right direction
+			throw new IllegalStateException("The CommandAPI's NMS hook failed to load! This version of the CommandAPI is " +
+				(MojangMappedVersionHandler.isMojangMapped() ? "Mojang" : "Spigot") + "-mapped. Have you checked that " +
+				"you are using a CommandAPI version that matches the mappings that your plugin is using?", error);
 		}
 	}
-
 }
