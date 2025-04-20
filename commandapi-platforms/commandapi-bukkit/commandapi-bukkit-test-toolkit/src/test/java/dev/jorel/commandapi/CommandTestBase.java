@@ -1,7 +1,7 @@
 package dev.jorel.commandapi;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.ServerMock;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
