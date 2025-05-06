@@ -1,6 +1,6 @@
 package dev.jorel.commandapi.spying;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandTestBase;

@@ -1,6 +1,6 @@
 package dev.jorel.commandapi;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.MockBukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.Consumer;

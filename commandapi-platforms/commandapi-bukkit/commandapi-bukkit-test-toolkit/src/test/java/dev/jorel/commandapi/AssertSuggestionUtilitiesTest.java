@@ -1,6 +1,6 @@
 package dev.jorel.commandapi;
 
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;

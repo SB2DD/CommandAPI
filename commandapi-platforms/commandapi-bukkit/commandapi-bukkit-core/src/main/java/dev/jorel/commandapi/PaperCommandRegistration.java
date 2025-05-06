@@ -39,6 +39,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 	private static final SafeVarHandle<CommandNode<?>, Object> metaField;
 
 	static {
+		// Deal with retrieving the dispatcher in the PaperCommands class
 		Object paperCommandsInstanceObject = null;
 		Field dispatcherFieldObject = null;
 
@@ -54,6 +55,7 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 		dispatcherField = dispatcherFieldObject;
 		dispatcherField.setAccessible(true);
 
+		// Deal with retrieving a constructor to mark a command as a plugin command
 		Constructor<?> commandNode;
 		SafeVarHandle<CommandNode<?>, ?> metaFieldHandle = null;
 		try {
@@ -65,7 +67,14 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				commandNode = pluginCommandMeta.getDeclaredConstructor(PluginMeta.class, String.class, List.class);
 				metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "pluginCommandMeta", "pluginCommandMeta", pluginCommandMeta);
 			} catch (ClassNotFoundException | NoSuchMethodException e1) {
-				commandNode = null;
+				try {
+					// If this happens, the PluginCommandMeta as been renamed to APICommandMeta
+					Class<?> apiCommandMeta = Class.forName("io.papermc.paper.command.brigadier.APICommandMeta");
+					commandNode = apiCommandMeta.getDeclaredConstructor(PluginMeta.class, String.class, List.class, String.class, boolean.class);
+					metaFieldHandle = SafeVarHandle.ofOrNull(CommandNode.class, "apiCommandMeta", "apiCommandMeta", apiCommandMeta);
+				} catch (ClassNotFoundException | NoSuchMethodException e2) {
+					commandNode = null;
+				}
 			}
 		}
 		pluginCommandNodeConstructor = commandNode;
@@ -135,8 +144,8 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 
 	@Override
 	public void unregister(String commandName, boolean unregisterNamespaces, boolean unregisterBukkit) {
-		// Remove nodes from the  dispatcher
-		removeBrigadierCommands(getPaperDispatcher().getRoot(), commandName, unregisterNamespaces,
+		// Remove nodes from the dispatcher
+		removeBrigadierCommands(getBrigadierDispatcher().getRoot(), commandName, unregisterNamespaces,
 			// If we are unregistering a Bukkit command, ONLY unregister BukkitCommandNodes
 			// If we are unregistering a Vanilla command, DO NOT unregister BukkitCommandNodes
 			c -> !unregisterBukkit ^ isBukkitCommand.test(c));
@@ -187,8 +196,18 @@ public class PaperCommandRegistration<Source> extends CommandRegistrationStrateg
 				getDescription(node.getLiteral()),
 				getAliasesForCommand(node.getLiteral())
 			));
-		} catch (ReflectiveOperationException e) {
-			// This doesn't happen
+		} catch (ReflectiveOperationException | IllegalArgumentException e) {
+			try {
+				metaField.set(node, pluginCommandNodeConstructor.newInstance(
+					CommandAPIBukkit.getConfiguration().getPlugin().getPluginMeta(),
+					getDescription(node.getLiteral()),
+					getAliasesForCommand(node.getLiteral()),
+					CommandAPIBukkit.getConfiguration().getNamespace(), // Don't think this matters actually
+					false // Indicates a server side only command
+				));
+			} catch (ReflectiveOperationException e1) {
+				// This doesn't happen
+			}
 		}
 	}
 

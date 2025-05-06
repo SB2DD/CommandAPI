@@ -35,22 +35,57 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
 
+      - name: Checkout the BytecodeAnalyser repository
+        run: |
+            git clone https://github.com/CommandAPI/BytecodeAnalyser.git
+            cd BytecodeAnalyser
+            commitHash=$(git rev-parse HEAD)
+            echo "$commitHash"
+
+      - name: Compile BytecodeAnalyser using Gradle
+        run: |
+            cd BytecodeAnalyser
+            ./gradlew jar
+
       ### Compilation ###
 
       - name: Build the CommandAPI (Bukkit+Velocity) using maven
         run: mvn clean install --batch-mode -P Platform.Bukkit,Platform.Velocity
 
-      - name: Check NMS_Common compiles against all compatible Minecraft versions
+      ### Check NMS_Common compiles against all compatible Minecraft versions
+
+      - name: Compile NMS_Common for 1.20 and 1.20.1
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R1
+
+      - name: Compile NMS_Common for 1.20.2
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R2
+
+      - name: Compile NMS_Common for 1.20.3 and 1.20.4
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R3
+
+      - name: Compile NMS_Common for 1.20.5 and 1.20.6
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_20_R4
+
+      - name: Compile NMS_Common for 1.21 and 1.21.1
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R1
+
+      - name: Compile NMS_Common for 1.21.2 and 1.21.3
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R2
+
+      - name: Compile NMS_Common for 1.21.4
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R3
+
+      - name: Compile NMS_Common for 1.21.5
+        run: mvn clean package -Dmaven.source.skip=true -Dmaven.javadoc.skip=true -pl :commandapi-bukkit-nms-common -am -P Platform.Bukkit,Spigot_1_21_R4
+
+      - name: Copy BytecodeAnalyser to nms-common target folder
+        run: mv BytecodeAnalyser/build/libs/BytecodeAnalyser*.jar commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
+
+      - name: Run BytecodeAnalyser
         run: |
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_17_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_18_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_18_2_R2
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_19_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_19_3_R2
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_20_R1
-            mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_20_2_R2;
-      # Not Spigot_1_20_4_R3. This isn't compatible with NMS_CommonWithFunctions
-      # mvn clean package -pl :commandapi-bukkit-nms-common -P Platform.Bukkit,Spigot_1_20_4_R3;
+            cd commandapi-platforms/commandapi-bukkit/commandapi-bukkit-nms/commandapi-bukkit-nms-common/target
+            chmod +x BytecodeAnalyser*.jar
+            java -jar BytecodeAnalyser*.jar
 
       # - name: validate version-specific dependencies (nms-common)
       #   run: |
@@ -149,7 +184,7 @@ jobs:
     steps:
       - name: Checkout the CommandAPI repository
         uses: actions/checkout@v3
-        
+
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
@@ -159,7 +194,7 @@ jobs:
           server-password: MAVEN_PASSWORD
           java-version: 21
           cache: maven
-          
+
       - name: Deploy snapshot version of the CommandAPI (Bukkit+Velocity) to the Sonatype snapshot repository
         run: |
           if mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -E -q '\-SNAPSHOT$';  then

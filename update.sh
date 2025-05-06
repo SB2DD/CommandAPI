@@ -4,12 +4,6 @@ read -r oldVer
 echo "New version: "
 read -r newVer
 
-###########
-# Doxygen #
-###########
-
-sed -i "s/PROJECT_NUMBER         = $oldVer/PROJECT_NUMBER         = $newVer/" Doxyfile
-
 ##########################
 # Maven example projects #
 ##########################
@@ -97,11 +91,3 @@ mvn versions:commit -P Platform.Bukkit
 
 mvn versions:set -DnewVersion=$newVer -P Platform.Velocity
 mvn versions:commit -P Platform.Velocity
-
-#######################
-# Manual update notes #
-#######################
-
-echo "IMPORTANT: Manual update notes"
-echo "  ./examples/bukkit/automated-tests/README.md: link to \`test_intro.html\` should point to the latest documentation version"
-echo "  ./examples/bukkit/automated-tests-shaded/README.md: link to \`test_intro.html\` should point to the latest documentation version"
