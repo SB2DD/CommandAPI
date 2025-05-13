@@ -20,19 +20,3 @@ runTest Minecraft_1_20_2
 # 1.20 & 1.20.1
 runTest Minecraft_1_20
 runTest Minecraft_1_20_Mojang
-
-# 1.19.4
-runTest Minecraft_1_19_4
-runTest Minecraft_1_19_4_Mojang
-
-# 1.19.1 & 1.19.2
-runTest Minecraft_1_19_2
-
-# 1.18 & 1.18.1
-runTest Minecraft_1_18
-
-# 1.17
-runTest Minecraft_1_17
-
-# 1.16.5
-runTest Minecraft_1_16_5

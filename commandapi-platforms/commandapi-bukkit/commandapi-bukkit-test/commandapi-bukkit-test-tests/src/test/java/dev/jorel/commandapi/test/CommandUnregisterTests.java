@@ -123,7 +123,7 @@ class CommandUnregisterTests extends TestBase {
 			.executes((sender, args) -> {
 				vanillaResults.set(args.getUnchecked(0));
 			})
-			.register();
+			.register("minecraft");
 
 		assertEquals(BRIG_TREE.FULL, getDispatcherString());
 

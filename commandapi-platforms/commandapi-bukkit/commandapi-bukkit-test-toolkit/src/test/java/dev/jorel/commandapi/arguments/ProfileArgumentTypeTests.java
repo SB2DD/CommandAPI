@@ -1,7 +1,7 @@
 package dev.jorel.commandapi.arguments;
 
-import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.command.ConsoleCommandSenderMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.jorel.commandapi.CommandAPICommand;

@@ -10,17 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
@@ -64,10 +61,11 @@ import dev.jorel.commandapi.commandsenders.BukkitPlayer;
 import dev.jorel.commandapi.commandsenders.BukkitProxiedCommandSender;
 import dev.jorel.commandapi.commandsenders.BukkitRemoteConsoleCommandSender;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import dev.jorel.commandapi.network.BukkitCommandAPIMessenger;
 import dev.jorel.commandapi.nms.NMS;
 import dev.jorel.commandapi.preprocessor.Unimplemented;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 // CommandAPIBukkit is an CommandAPIPlatform, but also needs all of the methods from
@@ -80,6 +78,7 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	private static InternalBukkitConfig config;
 	private PaperImplementations paper;
 	private CommandRegistrationStrategy<Source> commandRegistrationStrategy;
+	private BukkitCommandAPIMessenger messenger;
 
 	protected CommandAPIBukkit() {
 		CommandAPIBukkit.instance = this;
@@ -277,14 +276,12 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 	void updateHelpForCommands(List<RegisteredCommand> commands) {
 		Map<String, HelpTopic> helpTopicsToAdd = new HashMap<>();
-		Set<String> namespacedCommandNames = new HashSet<>();
 
 		for (RegisteredCommand command : commands) {
+			if (getPaper().isPaperBrigAPI() && !command.shouldGenerateHelpTopic()) continue;
+
 			// Don't override the plugin help topic
 			String commandPrefix = generateCommandHelpPrefix(command.commandName());
-
-			// Namespaced commands shouldn't have a help topic, we should save the namespaced command name
-			namespacedCommandNames.add(generateCommandHelpPrefix(command.commandName(), command.namespace()));
 			
 			StringBuilder aliasSb = new StringBuilder();
 			final String shortDescription;
@@ -347,9 +344,6 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 					// Don't override the plugin help topic
 					commandPrefix = generateCommandHelpPrefix(alias);
 					helpTopic = generateHelpTopic(commandPrefix, shortDescription, currentAliasSb.toString().trim(), permission);
-
-					// Namespaced commands shouldn't have a help topic, we should save the namespaced alias name
-					namespacedCommandNames.add(generateCommandHelpPrefix(alias, command.namespace()));
 				}
 				helpTopicsToAdd.put(commandPrefix, helpTopic);
 			}
@@ -357,11 +351,6 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 		// We have to use helpTopics.put (instead of .addTopic) because we're overwriting an existing help topic, not adding a new help topic
 		getHelpMap().putAll(helpTopicsToAdd);
-
-		// We also have to remove help topics for namespaced command names
-		for (String namespacedCommandName : namespacedCommandNames) {
-			getHelpMap().remove(namespacedCommandName);
-		}
 	}
 
 	@Override
@@ -412,7 +401,8 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 
 			final Class<? extends CommandSender> NullCommandSender = paper.getNullCommandSender();
 			if (NullCommandSender != null && NullCommandSender.isInstance(sender)) {
-				// Since this should only be during a function load, this is just a placeholder to evade the exception.
+				// Since this should only be during a function load or setting up
+				//  help topics, this is just a placeholder to evade the exception.
 				return null;
 			}
 
@@ -514,6 +504,16 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	}
 
 	@Override
+	public BukkitCommandAPIMessenger setupMessenger() {
+		messenger = new BukkitCommandAPIMessenger(getConfiguration().getPlugin());
+		return messenger;
+	}
+
+	public BukkitCommandAPIMessenger getMessenger() {
+		return messenger;
+	}
+
+	@Override
 	public final CommandDispatcher<Source> getBrigadierDispatcher() {
 		return commandRegistrationStrategy.getBrigadierDispatcher();
 	}
@@ -585,19 +585,8 @@ public abstract class CommandAPIBukkit<Source> implements CommandAPIPlatform<Arg
 	 * @return a {@link WrapperCommandSyntaxException} that wraps Brigadier's
 	 * {@link CommandSyntaxException}
 	 */
-	public static WrapperCommandSyntaxException failWithAdventureComponent(Component message) {
-		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message));
-	}
-
-	/**
-	 * Forces a command to return a success value of 0
-	 *
-	 * @param message Description of the error message, formatted as an adventure chat component
-	 * @return a {@link WrapperCommandSyntaxException} that wraps Brigadier's
-	 * {@link CommandSyntaxException}
-	 */
 	public static WrapperCommandSyntaxException failWithAdventureComponent(ComponentLike message) {
-		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message.asComponent()));
+		return CommandAPI.failWithMessage(BukkitTooltip.messageFromAdventureComponent(message));
 	}
 	
 	/**

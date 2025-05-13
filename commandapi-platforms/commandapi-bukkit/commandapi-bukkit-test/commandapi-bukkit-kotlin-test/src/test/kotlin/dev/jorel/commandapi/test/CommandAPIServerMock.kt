@@ -7,9 +7,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.suggestion.Suggestions
 import dev.jorel.commandapi.Brigadier
 import org.bukkit.Keyed
+import org.bukkit.Location
+import org.bukkit.NamespacedKey
 import org.bukkit.Registry
+import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.generator.structure.StructureType
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Recipe
+import org.bukkit.map.MapCursor
 import org.bukkit.scoreboard.Criteria
 import org.junit.jupiter.api.Assertions
 import java.util.concurrent.ExecutionException
@@ -47,6 +54,34 @@ class CommandAPIServerMock : ServerMock() {
 			Assertions.fail<Any>("Command '/$commandLine' failed. If you expected this to fail, use dispatchThrowableCommand() instead.", e)
 			false
 		}
+	}
+
+	/**
+	 * Adds a recipe to the crafting manager.
+	 *
+	 * @param recipe the recipe to add
+	 * @param resendRecipes true to update the client with the full set of recipes
+	 * @return true if the recipe was added, false if it wasn't for some reason
+	 */
+	override fun addRecipe(recipe: Recipe?, resendRecipes: Boolean): Boolean {
+		TODO("Not yet implemented")
+	}
+
+	/**
+	 * Remove a recipe from the server.
+	 *
+	 *
+	 * **Note that removing a recipe may cause permanent loss of data
+	 * associated with that recipe (eg whether it has been discovered by
+	 * players).**
+	 *
+	 * @param key NamespacedKey of recipe to remove.
+	 * @param resendRecipes true to update all clients on the new recipe list.
+	 * Will only update if a recipe was actually removed
+	 * @return True if recipe was removed
+	 */
+	override fun removeRecipe(key: NamespacedKey, resendRecipes: Boolean): Boolean {
+		TODO("Not yet implemented")
 	}
 
 	fun getSuggestions(sender: CommandSender, commandLine: String?): List<String> {
@@ -92,6 +127,43 @@ class CommandAPIServerMock : ServerMock() {
 	}
 
 	override fun isTickingWorlds(): Boolean {
+		TODO("Not yet implemented")
+	}
+
+	/**
+	 * Create a new explorer map targeting the closest nearby structure of a
+	 * given [org.bukkit.generator.structure.StructureType].
+	 *
+	 * @param world the world the map will belong to
+	 * @param location the origin location to find the nearest structure
+	 * @param structureType the type of structure to find
+	 * @param mapIcon the map icon to use on the map
+	 * @param radius radius to search, see World#locateNearestStructure for more
+	 * information
+	 * @param findUnexplored whether to find unexplored structures
+	 * @return the newly created item stack or null if it can't find a location
+	 *
+	 * @see World.locateNearestStructure
+	 */
+	override fun createExplorerMap(world: World, location: Location, structureType: StructureType, mapIcon: MapCursor.Type, radius: Int, findUnexplored: Boolean): ItemStack? {
+		TODO("Not yet implemented")
+	}
+
+	/**
+	 * Updates all advancement, tag, and recipe data to all connected clients.
+	 * Useful for updating clients to new advancements/recipes/tags.
+	 * @see .updateRecipes
+	 */
+	override fun updateResources() {
+		TODO("Not yet implemented")
+	}
+
+	/**
+	 * Updates recipe data and the recipe book to each player. Useful for
+	 * updating clients to new recipes.
+	 * @see .updateResources
+	 */
+	override fun updateRecipes() {
 		TODO("Not yet implemented")
 	}
 

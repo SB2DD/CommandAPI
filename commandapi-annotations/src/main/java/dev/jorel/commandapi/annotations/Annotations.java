@@ -50,6 +50,7 @@ import dev.jorel.commandapi.annotations.arguments.AAdventureChatArgument;
 import dev.jorel.commandapi.annotations.arguments.AAdventureChatComponentArgument;
 import dev.jorel.commandapi.annotations.arguments.AAngleArgument;
 import dev.jorel.commandapi.annotations.arguments.AAxisArgument;
+import dev.jorel.commandapi.annotations.arguments.AAsyncOfflinePlayerArgument;
 import dev.jorel.commandapi.annotations.arguments.ABiomeArgument;
 import dev.jorel.commandapi.annotations.arguments.ABlockPredicateArgument;
 import dev.jorel.commandapi.annotations.arguments.ABlockStateArgument;
@@ -107,7 +108,7 @@ public class Annotations extends AbstractProcessor {
 
 	private static final Class<?>[] ARGUMENT_ANNOTATIONS = new Class<?>[] { AAdvancementArgument.class,
 		AAdventureChatArgument.class, AAdventureChatComponentArgument.class, AAngleArgument.class,
-		AAxisArgument.class, ABiomeArgument.class, ABlockPredicateArgument.class, ABlockStateArgument.class,
+		AAxisArgument.class, AAsyncOfflinePlayerArgument.class, ABiomeArgument.class, ABlockPredicateArgument.class, ABlockStateArgument.class,
 		ABooleanArgument.class, AChatArgument.class, AChatColorArgument.class, AChatComponentArgument.class,
 		ADoubleArgument.class, AEnchantmentArgument.class, AEntitySelectorArgument.ManyEntities.class,
 		AEntitySelectorArgument.ManyPlayers.class, AEntitySelectorArgument.OneEntity.class,

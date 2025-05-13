@@ -257,7 +257,7 @@ class CommandRegistrationTests extends TestBase {
 			)
 			.executesPlayer(P_EXEC);
 
-		commandWithDuplicateLiteralArgumentNames.register();
+		commandWithDuplicateLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
@@ -296,7 +296,7 @@ class CommandRegistrationTests extends TestBase {
 			)
 			.executesPlayer(P_EXEC);
 
-		commandWithDuplicateMultiLiteralArgumentNames.register();
+		commandWithDuplicateMultiLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
@@ -423,7 +423,7 @@ class CommandRegistrationTests extends TestBase {
 				)
 			);
 
-		commandWithDuplicateLiteralArgumentNames.register();
+		commandWithDuplicateLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
@@ -464,7 +464,7 @@ class CommandRegistrationTests extends TestBase {
 				)
 			);
 
-		commandWithDuplicateMultiLiteralArgumentNames.register();
+		commandWithDuplicateMultiLiteralArgumentNames.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
@@ -563,7 +563,7 @@ class CommandRegistrationTests extends TestBase {
 			.then(new LiteralArgument("path3").then(new StringArgument("alice").executesPlayer(P_EXEC)))
 			.then(new LiteralArgument("path4").then(new StringArgument("alice").executesPlayer(P_EXEC)));
 
-		commandWithDuplicateNamesSeparated.register();
+		commandWithDuplicateNamesSeparated.register("minecraft");
 		// Command added to tree
 		assertEquals("""
 				{
@@ -719,7 +719,7 @@ class CommandRegistrationTests extends TestBase {
 			new LiteralArgument("b"),
 			new LiteralArgument("c")
 				.executesPlayer(P_EXEC)
-		).register();
+		).register("minecraft");
 
 		// Command added to tree
 		assertEquals("""

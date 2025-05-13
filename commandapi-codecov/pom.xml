@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi</artifactId>
-		<version>9.7.0</version>
+		<version>10.0.0</version>
 	</parent>
 
 	<artifactId>commandapi-codecov</artifactId>
@@ -74,18 +74,6 @@
 			<version>${project.version}</version>
 			<classifier>mojang-mapped</classifier>
 		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.19-common</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.17-common</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
 
 		<!-- NMS-specific implementations -->
 		<dependency>
@@ -93,61 +81,6 @@
 			<artifactId>commandapi-bukkit-1.20</artifactId>
 			<version>${project.version}</version>
 			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.19.4</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.19.3</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.19.1</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.19</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.18.2</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.18</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.17</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.17.1</artifactId>
-			<version>${project.version}</version>
-			<classifier>mojang-mapped</classifier>
-		</dependency>
-
-		<!-- These don't have mojang mappings -->
-		<dependency>
-			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-1.16.5</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

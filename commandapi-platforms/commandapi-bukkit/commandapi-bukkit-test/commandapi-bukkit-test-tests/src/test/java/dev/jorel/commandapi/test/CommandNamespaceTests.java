@@ -120,8 +120,8 @@ public class CommandNamespaceTests extends TestBase {
 				results.set(info.args().getUnchecked("string"));
 			});
 
-		// Make sure the default registration with the minecraft: namespace works
-		command.register();
+		// Make sure the special registration with the minecraft: namespace works
+		command.register("minecraft");
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
@@ -246,7 +246,7 @@ public class CommandNamespaceTests extends TestBase {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {false, true})
-	public void testAliasesWithDefaultNamespace(boolean enableBeforeRegistering) {
+	public void testAliasesWithMinecraftNamespace(boolean enableBeforeRegistering) {
 		Mut<String> results = Mut.of();
 
 		Player player = null;
@@ -261,8 +261,8 @@ public class CommandNamespaceTests extends TestBase {
 				results.set(info.args().getUnchecked("string"));
 			});
 
-		// Test aliases with the default namespace
-		command.register();
+		// Test aliases with the minecraft namespace
+		command.register("minecraft");
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
@@ -515,7 +515,7 @@ public class CommandNamespaceTests extends TestBase {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {false, true})
-	public void testSameCommandNameConflictWithDefaultNamespaceAndCustomNamespace(boolean enableBeforeRegistering) {
+	public void testSameCommandNameConflictWithMinecraftNamespaceAndCustomNamespace(boolean enableBeforeRegistering) {
 		Mut<String> results = Mut.of();
 
 		Player tempPlayer = null;
@@ -523,7 +523,7 @@ public class CommandNamespaceTests extends TestBase {
 			tempPlayer = enableWithNamespaces();
 		}
 
-		CommandAPICommand defaultNamespace = new CommandAPICommand("test")
+		CommandAPICommand minecraftNamespace = new CommandAPICommand("test")
 			.withArguments(LiteralArgument.of("a"))
 			.executesPlayer(info -> {
 				results.set("a");
@@ -535,7 +535,7 @@ public class CommandNamespaceTests extends TestBase {
 				results.set("b");
 			});
 
-		defaultNamespace.register();
+		minecraftNamespace.register("minecraft");
 		customNamespace.register("custom");
 
 		if (!enableBeforeRegistering) {
@@ -577,7 +577,7 @@ public class CommandNamespaceTests extends TestBase {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {true, false})
-	public void testCommandTreeRegistrationDefaultNamespace(boolean enableBeforeRegistering) {
+	public void testCommandTreeRegistrationMinecraftNamespace(boolean enableBeforeRegistering) {
 		Mut<String> results = Mut.of();
 
 		Player player = null;
@@ -603,8 +603,8 @@ public class CommandNamespaceTests extends TestBase {
 				)
 			);
 
-		// Make sure the default registration with the minecraft: namespace works
-		command.register();
+		// Make sure the special registration with the minecraft: namespace works
+		command.register("minecraft");
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
@@ -778,7 +778,7 @@ public class CommandNamespaceTests extends TestBase {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {false,true})
-	public void testPermissionsWithDefaultNamespace(boolean enableBeforeRegistering) {
+	public void testPermissionsWithMinecraftNamespace(boolean enableBeforeRegistering) {
 		Mut<String> commandRan = Mut.of();
 
 		Player player = null;
@@ -792,8 +792,8 @@ public class CommandNamespaceTests extends TestBase {
 				commandRan.set("ran");
 			});
 
-		// Test with default minecraft: namespace
-		command.register();
+		// Test with minecraft: namespace
+		command.register("minecraft");
 
 		if (!enableBeforeRegistering) {
 			player = enableWithNamespaces();
@@ -931,8 +931,8 @@ public class CommandNamespaceTests extends TestBase {
 		CommandAPIBukkitConfig config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin());
 		InternalBukkitConfig internalConfig = new InternalBukkitConfig(config);
 
-		// The namespace wasn't changed so it should default to minecraft
-		assertEquals("minecraft", internalConfig.getNamespace());
+		// The namespace wasn't changed so it should default to commandapitest
+		assertEquals("commandapitest", internalConfig.getNamespace());
 
 		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin());
 		CommandAPIBukkitConfig finalConfig = config;
@@ -944,8 +944,8 @@ public class CommandNamespaceTests extends TestBase {
 			.setNamespace("");
 		internalConfig = new InternalBukkitConfig(config);
 
-		// The namespace was set to an empty namespace so this should result in the default minecraft namespace
-		assertEquals("minecraft", internalConfig.getNamespace());
+		// The namespace was set to an empty namespace so this should result in the default comamndapitest namespace
+		assertEquals("commandapitest", internalConfig.getNamespace());
 
 		config = new CommandAPIBukkitConfig(MockPlatform.getConfiguration().getPlugin())
 			.setNamespace("custom");
@@ -983,8 +983,8 @@ public class CommandNamespaceTests extends TestBase {
 			.setNamespace("Custom");
 		internalConfig = new InternalBukkitConfig(config);
 
-		// The namespace uses invalid characters so the namespace should default to minecraft
-		assertEquals("minecraft", internalConfig.getNamespace());
+		// The namespace uses invalid characters so the namespace should default to commandapitest
+		assertEquals("commandapitest", internalConfig.getNamespace());
 
 		Player player = enableWithNamespaces();
 
@@ -994,17 +994,17 @@ public class CommandNamespaceTests extends TestBase {
 
 		command.register("");
 
-		// The command should be registered with the minecraft namespace because the namespace was empty
+		// The command should be registered with the commandapitest namespace because the namespace was empty
 		assertTrue(server.dispatchCommand(player, "test"));
-		assertTrue(server.dispatchCommand(player, "minecraft:test"));
+		assertTrue(server.dispatchCommand(player, "commandapitest:test"));
 
 		CommandAPI.unregister("test", true);
 
 		command.register("Command");
 
-		// The command should be registered with the minecraft namespace because the namespace was invalid
+		// The command should be registered with the commandapitest namespace because the namespace was invalid
 		assertTrue(server.dispatchCommand(player, "test"));
-		assertTrue(server.dispatchCommand(player, "minecraft:test"));
+		assertTrue(server.dispatchCommand(player, "commandapitest:test"));
 
 		CommandAPI.unregister("test", true);
 

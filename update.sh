@@ -4,37 +4,6 @@ read -r oldVer
 echo "New version: "
 read -r newVer
 
-############################
-# CommandAPI Documentation #
-############################
-
-# Maven
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" docssrc/src/setup_shading.md
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" docssrc/src/setup_dev.md
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" docssrc/src/setup_annotations.md
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" docssrc/src/kotlinintro.md
-sed -i "s/<version>$oldVer<\/version>/<version>$newVer<\/version>/" docssrc/src/test_setup.md
-
-# Gradle
-sed -i "s/dev\.jorel:commandapi-bukkit-shade:$oldVer/dev\.jorel:commandapi-bukkit-shade:$newVer/" docssrc/src/setup_shading.md
-sed -i "s/dev\.jorel:commandapi-bukkit-shade-mojang-mapped:$oldVer/dev\.jorel:commandapi-bukkit-shade-mojang-mapped:$newVer/" docssrc/src/setup_shading.md
-sed -i "s/dev\.jorel:commandapi-bukkit-core:$oldVer/dev\.jorel:commandapi-bukkit-core:$newVer/" docssrc/src/setup_dev.md
-sed -i "s/dev\.jorel:commandapi-annotations:$oldVer/dev\.jorel:commandapi-annotations:$newVer/" docssrc/src/setup_annotations.md
-sed -i "s/dev\.jorel:commandapi-bukkit-kotlin:$oldVer/dev\.jorel:commandapi-bukkit-kotlin:$newVer/" docssrc/src/kotlinintro.md
-sed -i "s/dev\.jorel:commandapi-velocity-kotlin:$oldVer/dev\.jorel:commandapi-velocity-kotlin:$newVer/" docssrc/src/kotlinintro.md
-sed -i "s/dev\.jorel:commandapi-bukkit-test-toolkit:$oldVer/dev\.jorel:commandapi-bukkit-test-toolkit:$newVer/" docssrc/src/test_setup.md
-sed -i "s/dev\.jorel:commandapi-bukkit-core:$oldVer/dev\.jorel:commandapi-bukkit-core:$newVer/" docssrc/src/test_setup.md
-
-# mdBook documentation
-sed -i "s/$oldVer/$newVer/" docssrc/book.toml
-sed -i "s/$oldVer/$newVer/" docs/latest.html
-
-###########
-# Doxygen #
-###########
-
-sed -i "s/PROJECT_NUMBER         = $oldVer/PROJECT_NUMBER         = $newVer/" Doxyfile
-
 ##########################
 # Maven example projects #
 ##########################
@@ -122,12 +91,3 @@ mvn versions:commit -P Platform.Bukkit
 
 mvn versions:set -DnewVersion=$newVer -P Platform.Velocity
 mvn versions:commit -P Platform.Velocity
-
-#######################
-# Manual update notes #
-#######################
-
-echo "IMPORTANT: Manual update notes"
-echo "  ./docssrc/src/velocity_intro.html#adding-the-dependency: \`commandapi-velocity-shade\` dependencies should point to the latest SNAPSHOT version"
-echo "  ./examples/bukkit/automated-tests/README.md: link to \`test_intro.html\` should point to the latest documentation version"
-echo "  ./examples/bukkit/automated-tests-shaded/README.md: link to \`test_intro.html\` should point to the latest documentation version"

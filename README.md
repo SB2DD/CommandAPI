@@ -33,7 +33,7 @@
 **Downloads & Documentation:**
 
 - <img width="20px" src="https://icon-icons.com/icons2/2348/PNG/512/download_arrow_icon_143023.png"></img> [All downloads](https://github.com/CommandAPI/CommandAPI/releases)
-- <img width="20px" src="https://icon-icons.com/icons2/2348/PNG/512/books_icon_143050.png"></img> [Documentation (includes usage for server owners!)](https://commandapi.jorel.dev/latest.html)
+- <img width="20px" src="https://icon-icons.com/icons2/2348/PNG/512/books_icon_143050.png"></img> [Documentation (includes usage for server owners!)](https://docs.commandapi.dev/)
 
 **Other**
 
@@ -43,35 +43,36 @@
 
 The list of what version of the CommandAPI you'll need to run on a specific version of Minecraft is as follows:
 
-| Minecraft version  | Compatible versions         | Latest compatible<br>version | Minimum Java<br>version required<br>to run latest version |
-|--------------------|-----------------------------|------------------------------|-----------------------------------------------------------|
-| **1.13.x**         | v1.0 - 5.12, 8.3.0  - 8.8.0 | 8.8.0                        | 16                                                        |
-| **1.14.1, 1.14.2** | v2.0 - 5.12, 8.3.0  - 8.8.0 | 8.8.0                        | 16                                                        |
-| **1.14.3, 1.14.4** | v2.1 - 5.12, 8.3.0  - 8.8.0 | 8.8.0                        | 16                                                        |
-| **1.15.x**         | v2.3a - 5.12, 8.3.0 - 9.3.0 | 9.3.0                        | 16                                                        |
-| **1.16.1**         | v3.0 - 5.12, 8.3.0  - 9.4.2 | 9.4.2                        | 16                                                        |
-| **1.16.2**         | v4.0 - 5.12, 8.3.0  - 9.4.2 | 9.4.2                        | 16                                                        |
-| **1.16.3**         | v4.2 - 5.12, 8.3.0  - 9.4.2 | 9.4.2                        | 16                                                        |
-| **1.16.4**         | v5.2 - 5.12, 8.3.0  - 9.4.2 | 9.4.2                        | 16                                                        |
-| **1.16.5**         | v5.7 - 7.0.0, 8.3.0 - 9.7.0 | 9.7.0                        | 16                                                        |
-| **1.17**           | 6.0.x - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.17.1**         | 6.1.x - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.18, 1.18.1**   | 6.5.2 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.18.2**         | 6.5.4 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.19**           | 8.3.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.19.1**         | 8.5.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.19.2**         | 8.5.1 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.19.3**         | 8.7.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.19.4**         | 8.8.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.20**           | 9.0.2 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.20.1**         | 9.0.3 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.20.2**         | 9.2.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.20.3, 1.20.4** | 9.3.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.20.5, 1.20.6** | 9.4.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.21**           | 9.5.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.21.1**         | 9.5.2 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.21.2, 1.21.3** | 9.6.0 - 9.7.0               | 9.7.0                        | 16                                                        |
-| **1.21.4**         | 9.7.0                       | 9.7.0                        | 16                                                        |
+| Minecraft version  | Compatible versions          | Latest compatible<br>version | Minimum Java<br>version required<br>to run latest version |
+|--------------------|------------------------------|------------------------------|-----------------------------------------------------------|
+| **1.13.x**         | v1.0 - 5.12, 8.3.0  - 8.8.0  | 8.8.0                        | 16                                                        |
+| **1.14.1, 1.14.2** | v2.0 - 5.12, 8.3.0  - 8.8.0  | 8.8.0                        | 16                                                        |
+| **1.14.3, 1.14.4** | v2.1 - 5.12, 8.3.0  - 8.8.0  | 8.8.0                        | 16                                                        |
+| **1.15.x**         | v2.3a - 5.12, 8.3.0 - 9.3.0  | 9.3.0                        | 16                                                        |
+| **1.16.1**         | v3.0 - 5.12, 8.3.0  - 9.4.2  | 9.4.2                        | 16                                                        |
+| **1.16.2**         | v4.0 - 5.12, 8.3.0  - 9.4.2  | 9.4.2                        | 16                                                        |
+| **1.16.3**         | v4.2 - 5.12, 8.3.0  - 9.4.2  | 9.4.2                        | 16                                                        |
+| **1.16.4**         | v5.2 - 5.12, 8.3.0  - 9.4.2  | 9.4.2                        | 16                                                        |
+| **1.16.5**         | v5.7 - 7.0.0, 8.3.0 - 9.7.0  | 9.7.0                        | 16                                                        |
+| **1.17**           | 6.0.x - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.17.1**         | 6.1.x - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.18, 1.18.1**   | 6.5.2 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.18.2**         | 6.5.4 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.19**           | 8.3.0 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.19.1**         | 8.5.0 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.19.2**         | 8.5.1 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.19.3**         | 8.7.0 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.19.4**         | 8.8.0 - 9.7.0                | 9.7.0                        | 16                                                        |
+| **1.20**           | 9.0.2 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.20.1**         | 9.0.3 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.20.2**         | 9.2.0 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.20.3, 1.20.4** | 9.3.0 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.20.5, 1.20.6** | 9.4.0 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.21**           | 9.5.0 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.21.1**         | 9.5.2 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.21.2, 1.21.3** | 9.6.0 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.21.4**         | 9.7.0 - 10.0.0               | 10.0.1                       | 17                                                        |
+| **1.21.5**         | 10.0.0 - 10.0.1              | 10.0.1                       | 17                                                        |
 
 -----
 
@@ -114,7 +115,7 @@ Still not convinced? In addition to all of the above, the CommandAPI also provid
 - **Safe suggestion generation** - The CommandAPI offers compile-time type safety for specific arguments
 - **Precise permission support** - Apply permissions to specific arguments - you need perms to even _see_ the argument
 - **Fast updates** - Consistently supports new Minecraft versions within a week of their release
-- [**Insanely detailed documentation**](https://commandapi.jorel.dev/latest.html) - Trust me, you've never seen a plugin documentation look so good.
+- [**Insanely detailed documentation**](https://docs.commandapi.dev/) - Trust me, you've never seen a plugin documentation look so good.
 
 -----
 
@@ -333,68 +334,47 @@ The CommandAPI is built using the Maven build tool - if you don't have it, you c
   git clone https://github.com/CommandAPI/CommandAPI.git
   ```
 
-- Run `mvn clean install -P Platform.Bukkit`
+- Run `mvn clean install -P Platform.Bukkit,Platform.Velocity`
 
-The resulting plugin `.jar` is found in `commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI-X.X.X_DATE.jar`
+Notable artifacts can be found here:
 
-## Building the CommandAPI's documentation
+- Spigot-mapped Spigot/Paper plugin `.jar`:
 
-The CommandAPI's documentation is built using a custom version of [mdBook](https://rust-lang.github.io/mdBook/), a command line tool to create "books" with Markdown. This custom version can be found [in my mdBook fork](https://github.com/JorelAli/mdBook/releases).
+  ```sh
+  commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin/target/CommandAPI-X.X.X_DATE.jar
+  ```
 
-- (Optional): Build the CommandAPI first, using the instructions above. The documentation pulls information directly from tests in the source code, so it assumes that those tests compile correctly!
+- Mojang-mapped Spigot/Paper plugin `.jar`:
 
-- Get a copy of mdbook fork executable.
-  - On Windows, download `mdbook-fa5.exe` from the [mdBook FA5 support](https://github.com/JorelAli/mdBook/releases/tag/v0.4.9) release
-  - On Linux:
-    - Clone my [mdBook fork](https://github.com/JorelAli/mdBook) using your preferred method, or with the command below:
+  ```sh
+  commandapi-platforms/commandapi-bukkit/commandapi-bukkit-plugin-mojang-mapped/target/CommandAPI-X.X.X_DATE.jar
+  ```
 
-      ```bash
-      git clone https://github.com/JorelAli/mdBook.git
-      ```
+- Velocity Plugin `.jar`:
 
-    - Use git to checkout to the `fa5` branch, using the following command:
-
-      ```bash
-      git checkout fa5
-      ```
-
-    - Build the executable with `cargo` (can be installed using `sudo apt-get install cargo` on Ubuntu distros), using the following command:
-
-      ```bash
-      cargo build
-      ```
-
-    - Grab the executable `mdbook` from `mdBook/target/debug/`
-
-- Navigate to the `docssrc` folder
-
-- Run `mdbook-fa5.exe build` (or `mdbook build` on Linux)
-
-The resulting compiled documentation is found in `docs/X.X.X`, where `X.X.X` is specified in the `book.toml` file's `build-dir` in the `docssrc` folder.
+  ```sh
+  commandapi-platforms/commandapi-velocity/commandapi-velocity-plugin/target/CommandAPI-X.X.X_DATE.jar
+  ```
 
 -----
 
 ## CommandAPI Project Timeline
 
-This is the current roadmap for the CommandAPI (as of 30th April 2024):
+This is the current roadmap for the CommandAPI (as of 1st April 2025):
 
-- **10.0.0:**
+- **Hard Paper fork support**
 
-  **Annotation improvements**
+  Paper's moving up in the world and it's about time the CommandAPI got with the times. We've got an active PR https://github.com/CommandAPI/CommandAPI/pull/517 that will have better support for Paper. In future, we'll only release Paper builds on Hangar and Spigot builds on SpigotMC. Modrinth will support both releases.
 
-  The CommandAPI's annotation system has always been a bit limited and was primarily introduced as a proof-of-concept. In this update, the CommandAPI's annotation system will be improved to be (ideally) as powerful as the non-annotation system and have slightly better type safety, support for non-static methods and better checks to prevent invalid command generation. More information about annotations can be found in the [Annotation specification document ](./annotations_spec_doc.md).
+- **Annotation improvements**
 
-- **Future:**
+  The CommandAPI's annotation system has always been a bit limited and was primarily introduced as a proof-of-concept. In this update, the CommandAPI's annotation system will be improved to be (ideally) as powerful as the non-annotation system and have slightly better type safety, support for non-static methods and better checks to prevent invalid command generation. More information about annotations can be found in the [Annotation specification document](./annotations_spec_doc.md).
 
-  **Velocity support**
-
-  Velocity support has been greatly anticipated by a large number of developers and we're hoping to bring Velocity support to you at some point in the future!
-
-  **Argument conflict detection**
+- **Argument conflict detection**
 
   The CommandAPI simply uses the Brigadier system under the hood. This system is prone to _argument conflicts_, which is where certain arguments are given priority over other arguments. (For example "hello" and "123" are both valid string arguments, but if you have a command that has a string argument or an integer argument, Brigadier may ignore the integer argument). In this update, the CommandAPI will try to spot potential conflicts and add a warning in the console.
 
-  **'True' custom arguments and server-side argument implementations**
+- **'True' custom arguments and server-side argument implementations**
 
   Through some brief testing of the [regex-mod branch](https://github.com/CommandAPI/CommandAPI/tree/dev/regex-mod) and my [MinecraftRegexArgumentMod](https://github.com/JorelAli/MinecraftRegexArgumentMod) repository, it was discovered that 'true' custom arguments (arguments with a custom implementation of the returned type and parser) are possible with the aid of a client-sided mod. Additionally, this functionality also works _without_ a client-sided mod, assuming this is only used server-side. This can be useful for server-only datapacks, functions and tags, as well as command blocks. It is possible that this may lead into being ported to Fabric, but there are no concrete plans to do so as of now.
 
@@ -411,6 +391,53 @@ This is the current roadmap for the CommandAPI (as of 30th April 2024):
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <td valign="top"><b>10.0.1</b></td>
+            <td valign="top">May 2025</td>
+            <td valign="top">
+				<b>Bug Fixes:</b>
+                <ul>
+                    <li>Fixes command unregistration not working on Paper</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/645 Ignore requirements for null senders</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top"><b>10.0.0</b></td>
+            <td valign="top">April 2025</td>
+            <td valign="top">
+				<b>⚠️ This version is incompatible with any plugin that used the CommandAPI version 9.X.X or below! (See documentation for more information)</b><br>
+                <b>Minecraft Version Changes:</b>
+                <ul>
+                    <li>Adds support for Minecraft 1.21.5</li>
+                    <li>Drops support for Minecraft 1.16.5 - 1.19.4</li>
+                </ul>
+				<b>Java Version Changes:</b>
+				<ul>
+                    <li>Change from requiring Java 16 to Java 17 (LTS)</li>
+                </ul>
+				<b>CommandAPI Changes:</b>
+                <ul>
+                    <li>https://github.com/CommandAPI/CommandAPI/pull/633 Adds an <code>AsyncOfflinePlayerArgument</code> to allow asynchronous fetching of an offline player</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/pull/636 The default namespace has been updated from <code>minecraft</code> to the plugin's name. If you are not shading, the default namespace is going to be <code>commandapi</code>. If you are shading, the default namespace is going to be your plugin's name.</li>
+                    <li>Updates the config defaults for the datapack reloading step to be opt-in instead of opt-out.</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/634 Updates methods that previously accepted <code>Component</code> to now accept <code>ComponentLike</code> instead.</li>
+                </ul>
+                <b>Bug Fixes:</b>
+                <ul>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/477 Fixed <code>NativeProxyCommandSender</code> not being able to run Vanilla (and CommandAPI) commands</li>
+                    <li>https://github.com/CommandAPI/CommandAPI/issues/578, https://github.com/CommandAPI/CommandAPI/issues/583, https://github.com/CommandAPI/CommandAPI/pull/629 Fixes <code>Bukkit#dispatchCommand()</code> not working after Paper's Brigadier API changes</li>
+                    <li>Fixes <code>PotionEffectArgument.NamespacedKey</code> not having suggestions in some versions</li>
+                </ul>
+				<b>Website Changes:</b>
+				<ul>
+                    <li>The CommandAPI has a new website: https://commandapi.dev/</li>
+					<li>The CommandAPI has moved from https://github.com/JorelAli/CommandAPI to https://github.com/CommandAPI/CommandAPI</li>
+                    <li>The CommandAPI's documentation source code is now over at https://github.com/CommandAPI/docs</li>
+                    <li>The CommandAPI's JavaDocs can be viewed over at https://javadocs.commandapi.dev</li>
+				</ul>
+            </td>
+        </tr>
         <tr>
             <td valign="top"><b>9.7.0</b></td>
             <td valign="top">December 2024</td>

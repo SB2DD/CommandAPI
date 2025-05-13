@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>commandapi-bukkit-test</artifactId>
 		<groupId>dev.jorel</groupId>
-		<version>9.7.0</version>
+		<version>10.0.1</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -33,7 +33,7 @@
 	<artifactId>commandapi-bukkit-test-impl</artifactId>
 
 	<properties>
-		<spigot.version>1.19.2-R0.1-SNAPSHOT</spigot.version>
+		<spigot.version>1.20.1-R0.1-SNAPSHOT</spigot.version>
 	</properties>
 
 	<repositories>

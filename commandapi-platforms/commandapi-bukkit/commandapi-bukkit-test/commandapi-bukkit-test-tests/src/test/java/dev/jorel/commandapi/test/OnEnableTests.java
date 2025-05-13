@@ -72,7 +72,7 @@ class OnEnableTests extends TestBase {
 			.executes((sender, args) -> {
 				results.set(args.getUnchecked(0));
 			})
-			.register();
+			.register("minecraft");
 
 		// Update commands should have been called for all players on the server
 		Mockito.verify(updateCommandsPlayer, Mockito.times(1)).updateCommands();

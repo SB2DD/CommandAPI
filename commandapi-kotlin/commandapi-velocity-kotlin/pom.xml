@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-kotlin</artifactId>
-		<version>9.7.0</version>
+		<version>10.0.1</version>
 	</parent>
 
 	<artifactId>commandapi-velocity-kotlin</artifactId>
@@ -36,8 +36,25 @@
 					</execution>
 				</executions>
 				<configuration>
-					<jvmTarget>16</jvmTarget>
+					<jvmTarget>17</jvmTarget>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>empty-javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>javadoc</classifier>
+							<classesDirectory>${basedir}/javadoc</classesDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

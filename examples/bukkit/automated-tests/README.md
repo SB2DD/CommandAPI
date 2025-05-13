@@ -1,6 +1,6 @@
 # Automated tests (unshaded)
 
-A simple example showcasing testing CommandAPI commands with [MockBukkit](https://github.com/MockBukkit/MockBukkit). For more information on the utility provided by the CommandAPI's testing framework, check the documentation [here](https://commandapi.jorel.dev/9.7.0/test_intro.html).
+A simple example showcasing testing CommandAPI commands with [MockBukkit](https://github.com/MockBukkit/MockBukkit). For more information on the utility provided by the CommandAPI's testing framework, check the documentation [here](https://docs.commandapi.dev/test/intro).
 
 Key points:
 
@@ -18,14 +18,14 @@ Key points:
 	<dependency>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-bukkit-test-toolkit</artifactId>
-		<version>9.7.0</version>
+		<version>10.0.1</version>
 		<scope>test</scope>
 	</dependency>
 
 	<dependency>
 		<groupId>dev.jorel</groupId>
 		<artifactId>commandapi-bukkit-core</artifactId>
-		<version>9.7.0</version>
+		<version>10.0.1</version>
 		<scope>provided</scope>
 	</dependency>
 

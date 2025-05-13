@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-tests</artifactId>
-			<version>9.7.0</version>
+			<version>10.0.1</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -46,14 +46,14 @@
 		<dependency>
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-shade</artifactId>
-			<version>9.7.0</version>
+			<version>10.0.1</version>
 		</dependency>
 
 		<!--This adds the Spigot API artifact to the build -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.19.2-R0.1-SNAPSHOT</version>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -69,14 +69,14 @@
 			<!-- Generic test implementation -->
 			<groupId>dev.jorel</groupId>
 			<artifactId>commandapi-bukkit-test-impl</artifactId>
-			<version>9.7.0</version>
+			<version>10.0.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<!-- Test implementation specific to 1.19.2 -->
+			<!-- Test implementation specific to 1.20 -->
 			<groupId>dev.jorel</groupId>
-			<artifactId>commandapi-bukkit-test-impl-1.19.2</artifactId>
-			<version>9.7.0</version>
+			<artifactId>commandapi-bukkit-test-impl-1.20</artifactId>
+			<version>10.0.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -90,7 +90,7 @@
 			<!-- Need (full) non-Mojang-mapped Spigot present for testing -->
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.19.2-R0.1-SNAPSHOT</version>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -151,8 +151,8 @@
 				<configuration>
 					<trimStackTrace>false</trimStackTrace>
 					<systemPropertyVariables>
-						<!-- Tell the test framework you're using Minecraft 1.19.2 -->
-						<profileId>Minecraft_1_19_2</profileId>
+						<!-- Tell the test framework you're using Minecraft 1.20 -->
+						<profileId>Minecraft_1_20</profileId>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>

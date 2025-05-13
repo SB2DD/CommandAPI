@@ -33,6 +33,7 @@ import dev.jorel.commandapi.arguments.AdventureChatComponentArgument;
 import dev.jorel.commandapi.arguments.AngleArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.AxisArgument;
+import dev.jorel.commandapi.arguments.AsyncOfflinePlayerArgument;
 import dev.jorel.commandapi.arguments.BiomeArgument;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
 import dev.jorel.commandapi.arguments.BlockStateArgument;
@@ -234,6 +235,7 @@ class AdvancedConverter {
 			case ADVENTURE_CHAT -> new AdventureChatArgument(nodeName);
 			case ADVENTURE_CHAT_COMPONENT -> new AdventureChatComponentArgument(nodeName);
 			case ANGLE -> new AngleArgument(nodeName);
+			case ASYNC_OFFLINE_PLAYER -> new AsyncOfflinePlayerArgument(nodeName);
 			case AXIS -> new AxisArgument(nodeName);
 			case BIOME -> new BiomeArgument(nodeName);
 			case BLOCKSTATE -> new BlockStateArgument(nodeName);

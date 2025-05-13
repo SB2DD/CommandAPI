@@ -49,7 +49,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				new MultiLiteralArgument("literal2", "option1", "option2", "option3")
 			)
 			.executesPlayer(P_EXEC)
-			.register();
+			.register("minecraft");
 
 		new CommandTree("command2")
 			.then(
@@ -58,7 +58,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 						.executesPlayer(P_EXEC)
 				)
 			)
-			.register();
+			.register("minecraft");
 
 		// Combining arguments shouldn't affect unpacking
 		new CommandAPICommand("command3")
@@ -69,7 +69,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 				)
 			)
 			.executesPlayer(P_EXEC)
-			.register();
+			.register("minecraft");
 
 		new CommandTree("command4")
 			.then(
@@ -79,7 +79,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 					)
 					.executesPlayer(P_EXEC)
 			)
-			.register();
+			.register("minecraft");
 
 		// Make sure all the commands were set up in the tree correctly
 		assertEquals("""
@@ -464,7 +464,7 @@ public class ArgumentMultiLiteralTests extends TestBase {
 		Mut<String> results = Mut.of();
 
 		new CommandAPICommand("test")
-			.withArguments(new MultiLiteralArgument(new String[]{"lit1", "lit2", "lit3"}))
+			.withArguments(new MultiLiteralArgument("literals", "lit1", "lit2", "lit3"))
 			.executesPlayer(info -> {
 				results.set((String) info.args().get(0));
 			})

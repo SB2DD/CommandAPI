@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -39,6 +42,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import dev.jorel.commandapi.wrappers.Rotation;
+import net.minecraft.commands.arguments.ObjectiveArgument;
+import net.minecraft.commands.arguments.TeamArgument;
+import net.minecraft.commands.arguments.coordinates.RotationArgument;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -62,6 +69,7 @@ import org.bukkit.craftbukkit.v1_21_R3.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R3.CraftParticle;
 import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R3.CraftSound;
+import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R3.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_21_R3.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_21_R3.command.VanillaCommandWrapper;
@@ -200,6 +208,8 @@ import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.ScoreHolder;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 
 // Mojang-Mapped reflection
 /**
@@ -217,6 +227,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 	private static final Field entitySelectorUsesSelector;
 	// private static final SafeVarHandle<ItemInput, CompoundTag> itemInput;
 	private static final Field serverFunctionLibraryDispatcher;
+	private static final MethodHandle minecraftServerSetSelected;
 	private static final boolean vanillaCommandDispatcherFieldExists;
 	private static final SafeVarHandle<MinecraftServer, FuelValues> minecraftServerFuelValues;
 
@@ -240,6 +251,16 @@ public class NMS_1_21_R3 extends NMS_Common {
 		// For some reason, MethodHandles fails for this field, but Field works okay
 		serverFunctionLibraryDispatcher = CommandAPIHandler.getField(ServerFunctionLibrary.class, "h", "dispatcher");
 
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		MethodHandle setSelected;
+		try {
+			setSelected = lookup.findVirtual(PackRepository.class, "setSelected", MethodType.methodType(void.class, Collection.class, boolean.class));
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			// We're on Spigot or Paper 1.21.4 build 62 or earlier
+			setSelected = null;
+		}
+		minecraftServerSetSelected = setSelected;
+
 		boolean fieldExists;
 		try {
 			MinecraftServer.class.getDeclaredField("vanillaCommandDispatcher");
@@ -253,24 +274,15 @@ public class NMS_1_21_R3 extends NMS_Common {
 		minecraftServerFuelValues = SafeVarHandle.ofOrNull(MinecraftServer.class, "aE", "fuelValues", FuelValues.class);
 	}
 
-	private static NamespacedKey fromResourceLocation(ResourceLocation key) {
-		return NamespacedKey.fromString(key.getNamespace() + ":" + key.getPath());
+	@Override
+	protected CommandBuildContext getCommandBuildContext() {
+		return COMMAND_BUILD_CONTEXT;
 	}
 
 	@Differs(from = "1.21.1", by = "New advancement argument implementation")
 	@Override
 	public ArgumentType<?> _ArgumentAdvancement() {
 		return ResourceKeyArgument.key(Registries.ADVANCEMENT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentBlockPredicate() {
-		return BlockPredicateArgument.blockPredicate(COMMAND_BUILD_CONTEXT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentBlockState() {
-		return BlockStateArgument.block(COMMAND_BUILD_CONTEXT);
 	}
 	
 	@Override
@@ -281,32 +293,6 @@ public class NMS_1_21_R3 extends NMS_Common {
 	@Override
 	public final ArgumentType<?> _ArgumentEnchantment() {
 		return ResourceArgument.resource(COMMAND_BUILD_CONTEXT, Registries.ENCHANTMENT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentEntity(ArgumentSubType subType) {
-		return switch (subType) {
-		case ENTITYSELECTOR_MANY_ENTITIES -> EntityArgument.entities();
-		case ENTITYSELECTOR_MANY_PLAYERS -> EntityArgument.players();
-		case ENTITYSELECTOR_ONE_ENTITY -> EntityArgument.entity();
-		case ENTITYSELECTOR_ONE_PLAYER -> EntityArgument.player();
-		default -> throw new IllegalArgumentException("Unexpected value: " + subType);
-		};
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentItemPredicate() {
-		return ItemPredicateArgument.itemPredicate(COMMAND_BUILD_CONTEXT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentItemStack() {
-		return ItemArgument.item(COMMAND_BUILD_CONTEXT);
-	}
-
-	@Override
-	public final ArgumentType<?> _ArgumentParticle() {
-		return ParticleArgument.particle(COMMAND_BUILD_CONTEXT);
 	}
 
 	@Differs(from = "1.21.1", by = "New recipe argument implementation")
@@ -412,13 +398,6 @@ public class NMS_1_21_R3 extends NMS_Common {
 	}
 
 	@Override
-	public final void createDispatcherFile(File file, CommandDispatcher<CommandSourceStack> dispatcher)
-			throws IOException {
-		Files.asCharSink(file, StandardCharsets.UTF_8).write(new GsonBuilder().setPrettyPrinting().create()
-				.toJson(ArgumentUtils.serializeNodeToJson(dispatcher, dispatcher.getRoot())));
-	}
-
-	@Override
 	public final HelpTopic generateHelpTopic(String commandName, String shortDescription, String fullDescription,
 			String permission) {
 		return new CustomHelpTopic(commandName, shortDescription, fullDescription, permission);
@@ -469,14 +448,6 @@ public class NMS_1_21_R3 extends NMS_Common {
 	}
 
 	@Override
-	public final Predicate<Block> getBlockPredicate(CommandContext<CommandSourceStack> cmdCtx, String key)
-			throws CommandSyntaxException {
-		Predicate<BlockInWorld> predicate = BlockPredicateArgument.getBlockPredicate(cmdCtx, key);
-		return (Block block) -> predicate.test(new BlockInWorld(cmdCtx.getSource().getLevel(),
-				new BlockPos(block.getX(), block.getY(), block.getZ()), true));
-	}
-
-	@Override
 	public final BlockData getBlockState(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return CraftBlockData.fromData(BlockStateArgument.getBlock(cmdCtx, key).getState());
 	}
@@ -490,6 +461,11 @@ public class NMS_1_21_R3 extends NMS_Common {
 	@Override
 	public final BaseComponent[] getChat(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		return ComponentSerializer.parse(Serializer.toJson(MessageArgument.getMessage(cmdCtx, key), COMMAND_BUILD_CONTEXT));
+	}
+
+	@Override
+	public BaseComponent[] getChatComponent(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		return ComponentSerializer.parse(Serializer.toJson(ComponentArgument.getComponent(cmdCtx, key), COMMAND_BUILD_CONTEXT));
 	}
 
 	@Override
@@ -565,14 +541,6 @@ public class NMS_1_21_R3 extends NMS_Common {
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + subType);
 		};
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public final EntityType getEntityType(CommandContext<CommandSourceStack> cmdCtx, String key)
-			throws CommandSyntaxException {
-		return EntityType.fromName(net.minecraft.world.entity.EntityType
-				.getKey(ResourceArgument.getSummonableEntityType(cmdCtx, key).value()).getPath());
 	}
 
 	@Override
@@ -652,31 +620,9 @@ public class NMS_1_21_R3 extends NMS_Common {
 	}
 
 	@Override
-	public final Location2D getLocation2DBlock(CommandContext<CommandSourceStack> cmdCtx, String key)
-			throws CommandSyntaxException {
-		ColumnPos blockPos = ColumnPosArgument.getColumnPos(cmdCtx, key);
-		return new Location2D(getWorldForCSS(cmdCtx.getSource()), blockPos.x(), blockPos.z());
-	}
-
-	@Override
-	public final Location2D getLocation2DPrecise(CommandContext<CommandSourceStack> cmdCtx, String key)
-			throws CommandSyntaxException {
+	public final Location2D getLocation2DPrecise(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
 		Vec2 vecPos = Vec2Argument.getVec2(cmdCtx, key);
 		return new Location2D(getWorldForCSS(cmdCtx.getSource()), vecPos.x, vecPos.y);
-	}
-
-	@Override
-	public final Location getLocationBlock(CommandContext<CommandSourceStack> cmdCtx, String key)
-			throws CommandSyntaxException {
-		BlockPos blockPos = BlockPosArgument.getSpawnablePos(cmdCtx, key);
-		return new Location(getWorldForCSS(cmdCtx.getSource()), blockPos.getX(), blockPos.getY(), blockPos.getZ());
-	}
-
-	@Override
-	public final Location getLocationPrecise(CommandContext<CommandSourceStack> cmdCtx, String key)
-			throws CommandSyntaxException {
-		Vec3 vecPos = Vec3Argument.getCoordinates(cmdCtx, key).getPosition(cmdCtx.getSource());
-		return new Location(getWorldForCSS(cmdCtx.getSource()), vecPos.x(), vecPos.y(), vecPos.z());
 	}
 
 	@Override
@@ -687,6 +633,12 @@ public class NMS_1_21_R3 extends NMS_Common {
 	@Override
 	public NamespacedKey getMinecraftKey(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return fromResourceLocation(ResourceLocationArgument.getId(cmdCtx, key));
+	}
+
+	@Override
+	public final Objective getObjective(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		String objectiveName = ObjectiveArgument.getObjective(cmdCtx, key).getName();
+		return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
 	}
 
 	@Override
@@ -804,6 +756,12 @@ public class NMS_1_21_R3 extends NMS_Common {
 	}
 
 	@Override
+	public final Rotation getRotation(CommandContext<CommandSourceStack> cmdCtx, String key) {
+		Vec2 rotation = RotationArgument.getRotation(cmdCtx, key).getRotation(cmdCtx.getSource());
+		return new Rotation(rotation.y, rotation.x);
+	}
+
+	@Override
 	public ScoreboardSlot getScoreboardSlot(CommandContext<CommandSourceStack> cmdCtx, String key) {
 		return ScoreboardSlot.ofMinecraft(ScoreboardSlotArgument.getDisplaySlot(cmdCtx, key).id());
 	}
@@ -824,8 +782,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 	}
 
 	@Override
-	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx,
-			boolean isNative) {
+	public BukkitCommandSender<? extends CommandSender> getSenderForCommand(CommandContext<CommandSourceStack> cmdCtx, boolean isNative) {
 		CommandSourceStack css = cmdCtx.getSource();
 
 		CommandSender sender = css.getBukkitSender();
@@ -837,10 +794,6 @@ public class NMS_1_21_R3 extends NMS_Common {
 			// sender.
 			sender = Bukkit.getConsoleSender();
 		}
-		Vec3 pos = css.getPosition();
-		Vec2 rot = css.getRotation();
-		World world = getWorldForCSS(css);
-		Location location = new Location(world, pos.x(), pos.y(), pos.z(), rot.y, rot.x);
 
 		Entity proxyEntity = css.getEntity();
 		CommandSender proxy = proxyEntity == null ? null : proxyEntity.getBukkitEntity();
@@ -849,10 +802,40 @@ public class NMS_1_21_R3 extends NMS_Common {
 				proxy = sender;
 			}
 
-			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender(sender, proxy, location, world));
+			return new BukkitNativeProxyCommandSender(new NativeProxyCommandSender_1_21_R3(css, sender, proxy));
 		} else {
 			return wrapCommandSender(sender);
 		}
+	}
+
+	@Override
+	public NativeProxyCommandSender createNativeProxyCommandSender(CommandSender caller, CommandSender callee, Location location, World world) {
+		if (callee == null) callee = caller;
+
+		// Most parameters default to what is defined by the caller
+		CommandSourceStack css = getBrigadierSourceFromCommandSender(wrapCommandSender(caller));
+
+		// Position and rotation may be overridden by the Location
+		if (location != null) {
+			css = css
+				.withPosition(new Vec3(location.getX(), location.getY(), location.getZ()))
+				.withRotation(new Vec2(location.getPitch(), location.getYaw()));
+		}
+
+		// ServerLevel may be overridden by the World
+		if (world == null && location != null) {
+			world = location.getWorld();
+		}
+		if (world != null) {
+			css = css.withLevel(((CraftWorld) world).getHandle());
+		}
+
+		// The proxied sender can only be an Entity in the CommandSourceStack
+		if (callee instanceof org.bukkit.entity.Entity e) {
+			css = css.withEntity(((CraftEntity) e).getHandle());
+		}
+
+		return new NativeProxyCommandSender_1_21_R3(css, caller, callee);
 	}
 
 	@Override
@@ -902,6 +885,7 @@ public class NMS_1_21_R3 extends NMS_Common {
 		};
 		case BIOMES -> _ArgumentSyntheticBiome()::listSuggestions;
 		case ENTITIES -> net.minecraft.commands.synchronization.SuggestionProviders.SUMMONABLE_ENTITIES;
+		case POTION_EFFECTS -> (context, builder) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.MOB_EFFECT.keySet(), builder);
 		default -> (context, builder) -> Suggestions.empty();
 		};
 	}
@@ -925,6 +909,12 @@ public class NMS_1_21_R3 extends NMS_Common {
 			result.add(fromResourceLocation(resourceLocation));
 		}
 		return result;
+	}
+
+	@Override
+	public final Team getTeam(CommandContext<CommandSourceStack> cmdCtx, String key) throws CommandSyntaxException {
+		String teamName = TeamArgument.getTeam(cmdCtx, key).getName();
+		return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
 	}
 
 	@Override
@@ -984,6 +974,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 				}
 			}
 			return packResources;
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to collect resource packs!", exception);
+			// Return all currently selected packs
+			return this.<MinecraftServer>getMinecraftServer().getPackRepository().openAllSelected();
 		});
 
 		// Step 2: Convert all of the resource packs into ReloadableResources which
@@ -1004,6 +998,10 @@ public class NMS_1_21_R3 extends NMS_Common {
 					LogUtils.getLogger().isDebugEnabled()).done();
 
 			return simpleReloadInstance.thenApply(x -> serverResources);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to convert resource packs into ReloadableResources", exception);
+			// Return existing resources
+			return this.<MinecraftServer>getMinecraftServer().resources;
 		});
 
 		// Step 3: Actually load all of the resources
@@ -1011,7 +1009,15 @@ public class NMS_1_21_R3 extends NMS_Common {
 			this.<MinecraftServer>getMinecraftServer().resources.close();
 			this.<MinecraftServer>getMinecraftServer().resources = serverResources;
 			this.<MinecraftServer>getMinecraftServer().server.syncCommands();
-			this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			if (minecraftServerSetSelected == null) {
+				this.<MinecraftServer>getMinecraftServer().getPackRepository().setSelected(collection);
+			} else {
+				try {
+					minecraftServerSetSelected.invoke(this.<MinecraftServer>getMinecraftServer().getPackRepository(), collection, true);
+				} catch (Throwable e) {
+					CommandAPI.logException("Something went wrong while trying to invoke PackRepository#setSelected(Collection, boolean)", e);
+				}
+			}
 			
 			final FeatureFlagSet enabledFeatures = this.<MinecraftServer>getMinecraftServer().getWorldData().getDataConfiguration().enabledFeatures();
 
@@ -1045,6 +1051,9 @@ public class NMS_1_21_R3 extends NMS_Common {
 						enabledFeatures
 				)
 			);
+		}).exceptionally(exception -> {
+			CommandAPI.logException("Something went wrong while trying to load resources.", exception);
+			return null;
 		});
 
 		// Step 4: Block the thread until everything's done
@@ -1120,6 +1129,12 @@ public class NMS_1_21_R3 extends NMS_Common {
 			}
 			return new PaperCommandRegistration<>(
 				() -> this.<MinecraftServer>getMinecraftServer().getCommands().getDispatcher(),
+				() -> {
+					SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getServer().getHelpMap();
+					helpMap.clear();
+					helpMap.initializeGeneralTopics();
+					helpMap.initializeCommands();
+				},
 				node -> bukkitCommandNode_bukkitBrigCommand.isInstance(node.getCommand())
 			);
 		}
