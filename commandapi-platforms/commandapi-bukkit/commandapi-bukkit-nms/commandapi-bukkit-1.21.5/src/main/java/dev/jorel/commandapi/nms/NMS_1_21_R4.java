@@ -1035,7 +1035,7 @@ public class NMS_1_21_R4 extends NMS_Common {
 			// the server indefinitely. Not sure why!
 			// this.<MinecraftServer>getMinecraftServer().getPlayerList().saveAll();
 			// this.<MinecraftServer>getMinecraftServer().getPlayerList().reloadResources();
-			// this.<MinecraftServer>getMinecraftServer().getFunctions().replaceLibrary(this.<MinecraftServer>getMinecraftServer().resources.managers().getFunctionLibrary());
+			 this.<MinecraftServer>getMinecraftServer().getFunctions().replaceLibrary(this.<MinecraftServer>getMinecraftServer().resources.managers().getFunctionLibrary());
 			this.<MinecraftServer>getMinecraftServer().getStructureManager()
 					.onResourceManagerReload(this.<MinecraftServer>getMinecraftServer().resources.resourceManager());
 			
